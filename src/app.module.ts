@@ -8,6 +8,10 @@ import {
   dataSourceFactory,
   dataSourceOptionsFactory,
 } from './config/typeorm-factory';
+import { TokenModule } from './token/token.module';
+import { ConcertModule } from './concert/concert.module';
+import { PointModule } from './point/point.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -18,6 +22,10 @@ import {
       useFactory: dataSourceOptionsFactory,
       dataSourceFactory: dataSourceFactory,
     }),
+    TokenModule,
+    ConcertModule,
+    PointModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

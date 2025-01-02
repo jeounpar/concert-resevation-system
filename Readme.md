@@ -48,10 +48,14 @@
 
 ---
 
+## ERD
+![erd.png](img/erd.png)
+
 ## 대기열 기능
 
 서버에서 내부적으로 n초마다 m명의 유저를 입장시키는 방식
 - 입장 : Redis 대기열에 있는 m명의 유저를 꺼내서 해당 유저의 토큰을 활성화
+- 3주차 과제에서는 MySQL로 대체
 
 **Redis : SortedSet 활용**
 
@@ -76,7 +80,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ### API Spec
 
 #### Request
-`POST /user/:userId/token`
+`POST /token/:userId`
 
 #### Response
 ```json
@@ -89,7 +93,13 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ### 예약 가능 날짜 API
 
 #### Request
-`GET /concert/:conertId/availabe-times`
+`GET /concert/:conertId/available-times`
+```json
+// header
+{
+  "x-queue-token" : "155b6bfa-d542-4001-8a70-c86adde969af"
+}
+```
 
 #### Response
 ```json
@@ -113,7 +123,13 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ### 예약 가능 좌석 API
 
 #### Request
-`GET /concert/:conertId/start-date/:startDate/available-seats`
+`GET /concert/:conertId/available-seats?startDate=${startDate}`
+```json
+// header
+{
+  "x-queue-token" : "155b6bfa-d542-4001-8a70-c86adde969af"
+}
+```
 
 #### Response
 ```json
@@ -145,16 +161,21 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 ### 좌석 예약 요청 API
-
+![post-reservation.png](img/post-reservation.png)
 #### Request
-`GET /user/:userId/concert/:conertId/reservation`
+`POST /concert/:conertId/user/:userId/reservation`
 ```json
+// header
+{
+  "x-queue-token" : "155b6bfa-d542-4001-8a70-c86adde969af"
+}
 // request body
 {
   "startDate" : "2024-12-01 09:00",
   "seatId" : 1
 }
 ```
+
 
 #### Response
 
@@ -191,8 +212,12 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ###  포인트 충전 API
 
 #### Request
-`POST /user/:userId/point/charge`
+`POST /point/:userId/charge`
 ```json
+// header
+{
+  "x-queue-token" : "155b6bfa-d542-4001-8a70-c86adde969af"
+}
 // request body
 {
   "point" : 100
@@ -212,7 +237,13 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ###  포인트 조회 API
 
 #### Request
-`GET /user/:userId/point`
+`GET /point/:userId`
+```json
+// header
+{
+  "x-queue-token" : "155b6bfa-d542-4001-8a70-c86adde969af"
+}
+```
 
 
 #### Response
@@ -226,9 +257,13 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ### 결제 API
 
 #### Request
-`POST /user/:userId/order`
+`POST /order/:userId/payment`
 
 ```json
+// header
+{
+  "x-queue-token" : "155b6bfa-d542-4001-8a70-c86adde969af"
+}
 // request body
 {
   "orderId" : 1
