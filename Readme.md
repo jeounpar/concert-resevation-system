@@ -157,7 +157,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 ### 좌석 예약 요청 API
-
+![post-reservation.png](img/post-reservation.png)
 #### Request
 `POST /concert/:conertId/user/:userId/reservation`
 ```json
