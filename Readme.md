@@ -1,7 +1,9 @@
 # 콘서트 예약 서비스
 
 ## 프로젝트 Milestone
+
 ### ManHour: 16시간
+
 | 요일  | 시간  |
 |-----|-----|
 | 토요일 | 4시간 |
@@ -14,6 +16,7 @@
 ---
 
 ### 1주차
+
 | 작업          | 시간  |
 |-------------|-----|
 | 요구사항 분석     | 4시간 |
@@ -25,6 +28,7 @@
 ---
 
 ### 2주차
+
 | 작업              | 시간    |
 |-----------------|-------|
 | 대기열 기능 구현       | 6시간   |
@@ -37,6 +41,7 @@
 ---
 
 ### 3주차
+
 | 작업              | 시간    |
 |-----------------|-------|
 | 대기열 기능 고도화      | 6시간   |
@@ -49,11 +54,13 @@
 ---
 
 ## ERD
+
 ![erd.png](img/erd.png)
 
 ## 대기열 기능
 
 서버에서 내부적으로 n초마다 m명의 유저를 입장시키는 방식
+
 - 입장 : Redis 대기열에 있는 m명의 유저를 꺼내서 해당 유저의 토큰을 활성화
 - 3주차 과제에서는 MySQL로 대체
 
@@ -63,26 +70,30 @@
 
 Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입한 유저에 대해 높은 우선순위 부여 가능
 
-
-
 ### 유저 토큰 발급 API
+
 ![user-token-generate-api.png](img/user-token-generate-api.png)
 
 **회원가입을 진행한 유저만 해당 기능을 사용할 수 있게 구현할 예정**
 
 1. 유저(userId)가 토큰 발급 API를 요청
 2. 해당 userId로 입장한 토큰이 있는지 Redis 조회
+
 - `Key = AllowUser:${userId}, Value = 토큰(uuid)`
+
 3. key에 해당하는 값이 존재한다면 해당 유저는 이미 입장을 한 유저이므로 토큰을 그대로 리턴
 4. key에 해당하는 값이 없다면 토큰 생성 후 Redis 대기열에 추가
+
 - 이 때 토큰은 발급 시점으로 부터 `n분 후 만료`된다.
 
 ### API Spec
 
 #### Request
+
 `POST /token/:userId`
 
 #### Response
+
 ```json
 // 200 OK
 {
@@ -93,7 +104,9 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ### 예약 가능 날짜 API
 
 #### Request
+
 `GET /concert/:conertId/available-times`
+
 ```json
 // header
 {
@@ -102,6 +115,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 #### Response
+
 ```json
 // 200 OK
 {
@@ -123,7 +137,9 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ### 예약 가능 좌석 API
 
 #### Request
+
 `GET /concert/:conertId/available-seats?startDate=${startDate}`
+
 ```json
 // header
 {
@@ -132,6 +148,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 #### Response
+
 ```json
 // 200 OK
 {
@@ -161,9 +178,13 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 ### 좌석 예약 요청 API
+
 ![post-reservation.png](img/post-reservation.png)
+
 #### Request
+
 `POST /concert/:conertId/user/:userId/reservation`
+
 ```json
 // header
 {
@@ -176,10 +197,10 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 }
 ```
 
-
 #### Response
 
 예약 성공
+
 ```json
 // 200 OK
 {
@@ -201,6 +222,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 예약 실패
+
 ```json
 // 400 BadRequest
 {
@@ -209,10 +231,12 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 }
 ```
 
-###  포인트 충전 API
+### 포인트 충전 API
 
 #### Request
+
 `POST /point/:userId/charge`
+
 ```json
 // header
 {
@@ -225,6 +249,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 #### Response
+
 ```json
 // 200 OK
 {
@@ -234,10 +259,12 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 }
 ```
 
-###  포인트 조회 API
+### 포인트 조회 API
 
 #### Request
+
 `GET /point/:userId`
+
 ```json
 // header
 {
@@ -245,8 +272,8 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 }
 ```
 
-
 #### Response
+
 ```json
 // 200 OK
 {
@@ -257,6 +284,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ### 결제 API
 
 #### Request
+
 `POST /order/:userId/payment`
 
 ```json
@@ -273,6 +301,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 #### Response
 
 결제 성공
+
 ```json
 // 200 OK
 {
@@ -304,6 +333,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 포인트 부족
+
 ```json
 // 400 BadRequest
 {
@@ -313,6 +343,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 ```
 
 만료된 주문서에 대한 결제 시도
+
 ```json
 // 400 BadRequest
 {
