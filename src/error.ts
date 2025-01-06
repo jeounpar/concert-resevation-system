@@ -3,3 +3,15 @@ export class TokenNotFound extends Error {
     super(message);
   }
 }
+
+export class NotFoundError extends Error {
+  public constructor(message: string) {
+    super(message);
+  }
+}
+
+export class TokenExpired extends Error {
+  public constructor(message: string) {
+    super(message);
+  }
+}

@@ -4,7 +4,7 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -106.1354,
+    "scrollTop": -527.1354,
     "scrollLeft": -130,
     "zoomLevel": 0.88,
     "show": 423,
@@ -420,7 +420,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1735827206238,
+          "updateAt": 1736071488011,
           "createAt": 1735826533012
         }
       }
@@ -1849,20 +1849,20 @@
       "i2DPL7Df3aY1aOY-HI7NB": {
         "id": "i2DPL7Df3aY1aOY-HI7NB",
         "tableId": "WHdcOlJQD9LUlXoXO65ML",
-        "name": "user_id",
-        "comment": "",
-        "dataType": "INTEGER",
+        "name": "token",
+        "comment": "토큰값 (uuid)",
+        "dataType": "VARCHAR",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
-          "widthComment": 60,
+          "widthComment": 70,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1735826577932,
+          "updateAt": 1736071503333,
           "createAt": 1735826571460
         }
       },
@@ -3194,12 +3194,13 @@
     ],
     "i2DPL7Df3aY1aOY-HI7NB": [
       "tableColumnEntities",
-      1735826571460,
-      -1,
+      1736071488010,
+      1736071465258,
       {
-        "name": 1735826574933,
-        "dataType": 1735826577135,
-        "options(notNull)": 1735826577932
+        "name": 1736071492670,
+        "dataType": 1736071496047,
+        "options(notNull)": 1735826577932,
+        "comment": 1736071503333
       }
     ],
     "OpN3Dd7v22hvhXaln30Ht": [
