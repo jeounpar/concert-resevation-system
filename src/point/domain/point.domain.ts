@@ -20,8 +20,9 @@ export class PointDomain {
     domain.#remainPoint = entity.remainPoint;
     domain.#createDate = entity.createDate;
     domain.#updateDate = entity.updateDate;
-    domain.#logs =
-      entity.logs.length > 0 ? entity.logs.map(PointLogDomain.fromEntity) : [];
+    domain.#logs = entity.logs
+      ? entity.logs.map(PointLogDomain.fromEntity)
+      : [];
 
     return domain;
   }
@@ -34,6 +35,15 @@ export class PointDomain {
     entity.remainPoint = this.#remainPoint;
 
     return entity;
+  }
+
+  static init({ userId }: { userId: number }) {
+    const domain = new PointDomain();
+
+    domain.#userId = userId;
+    domain.#remainPoint = 0;
+
+    return domain;
   }
 
   use({ amount }: { amount: number }) {
@@ -63,5 +73,12 @@ export class PointDomain {
       beforeAmount,
       afterAmount,
     });
+  }
+
+  toResponse() {
+    return {
+      userId: this.#userId,
+      remainPoint: this.#remainPoint,
+    };
   }
 }

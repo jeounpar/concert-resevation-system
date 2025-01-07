@@ -11,5 +11,6 @@ import { TokenScheduler } from './controller/token.scheduler';
   imports: [TypeOrmModule.forFeature([TokenEntity]), UserModule],
   providers: [TokenService, TokenRepository, TokenScheduler],
   controllers: [TokenController],
+  exports: [TokenService],
 })
 export class TokenModule {}
