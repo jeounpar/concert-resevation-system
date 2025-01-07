@@ -1890,7 +1890,7 @@
         "id": "zSKLuSIHibzQvbxkH4MtV",
         "tableId": "WHdcOlJQD9LUlXoXO65ML",
         "name": "status",
-        "comment": "BLOCK | ALLOW",
+        "comment": "WAIT | ACTIVE",
         "dataType": "ENUM",
         "default": "",
         "options": 8,

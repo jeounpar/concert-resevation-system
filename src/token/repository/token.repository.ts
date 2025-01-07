@@ -47,7 +47,7 @@ export class TokenRepository {
     await repo
       .createQueryBuilder()
       .softDelete()
-      .where('expired_date < :nowDate', { nowDate })
+      .where('expiredDate < :nowDate', { nowDate })
       .execute();
   }
 
@@ -57,7 +57,7 @@ export class TokenRepository {
     return {
       async blockedWithTake({ take }: { take: number }) {
         const found = await repo.find({
-          where: { status: 'BLOCK' },
+          where: { status: 'WAIT' },
           order: { id: 'ASC' },
           take,
         });
@@ -72,7 +72,7 @@ export class TokenRepository {
 
     return {
       async allow() {
-        return await repo.count({ where: { status: 'ALLOW' } });
+        return await repo.count({ where: { status: 'ACTIVE' } });
       },
     };
   }
@@ -81,9 +81,9 @@ export class TokenRepository {
     const repo = this.#getRepo(mgr);
 
     return {
-      async latestAllowed() {
+      async latestActiveed() {
         const entity = await repo.findOne({
-          where: { status: 'ALLOW' },
+          where: { status: 'ACTIVE' },
           order: { id: 'ASC' },
         });
 
@@ -109,22 +109,22 @@ export class TokenRepository {
 
         return entity ? TokenDomain.fromEntity(entity) : null;
       },
-      async tokenId({ tokenId }: { tokenId: string }) {
+      async tokenValue({ tokenValue }: { tokenValue: string }) {
         const entity = await repo.findOne({
-          where: { tokenId },
+          where: { tokenValue },
         });
 
         return entity ? TokenDomain.fromEntity(entity) : null;
       },
-      async tokenIdWithAllowStatus({
-        tokenId,
+      async tokenValueWithActiveStatus({
+        tokenValue,
         status,
       }: {
-        tokenId: string;
+        tokenValue: string;
         status: TokenStatus;
       }) {
         const entity = await repo.findOne({
-          where: { tokenId, status },
+          where: { tokenValue, status },
         });
 
         return entity ? TokenDomain.fromEntity(entity) : null;

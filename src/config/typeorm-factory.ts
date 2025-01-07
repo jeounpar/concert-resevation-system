@@ -22,7 +22,11 @@ async function inspectConnection(datasource: DataSource) {
   await datasource.query('SELECT 1');
 }
 
-export function getAllTypeOrmModels() {
+export function setDataSource(ds: DataSource) {
+  dataSource = ds;
+}
+
+export function getAllEntities() {
   return Object.values(Entities).filter((model) => typeof model === 'function');
 }
 
@@ -43,7 +47,7 @@ export function dataSourceOptionsFactory(
     password,
     database,
     poolSize,
-    entities: getAllTypeOrmModels(),
+    entities: getAllEntities(),
     namingStrategy: new SnakeNamingStrategy(),
     synchronize: true,
     logging: false,

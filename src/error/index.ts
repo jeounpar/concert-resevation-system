@@ -15,3 +15,9 @@ export class TokenExpired extends Error {
     super(message);
   }
 }
+
+export class PointNotEnough extends Error {
+  public constructor(message: string) {
+    super(message);
+  }
+}

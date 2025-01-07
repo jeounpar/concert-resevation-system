@@ -97,7 +97,7 @@ CREATE TABLE Token
   token        VARCHAR   NOT NULL COMMENT '토큰값 (uuid)',
   issued_date  TIMESTAMP NULL     COMMENT '토큰 발행 시간',
   expired_date TIMESTAMP NOT NULL COMMENT '토큰 만료 시간',
-  status       ENUM      NOT NULL COMMENT 'BLOCK | ALLOW',
+  status       ENUM      NOT NULL COMMENT 'WAIT | ACTIVE',
   PRIMARY KEY (id)
 ) COMMENT '토큰 테이블';
 

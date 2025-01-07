@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PointController } from './point.controller';
+import { PointController } from './controller/point.controller';
 
 @Module({
   controllers: [PointController],

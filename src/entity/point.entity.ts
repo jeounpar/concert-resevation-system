@@ -9,7 +9,7 @@ import {
 import { PointLogEntity } from './point-log.entity';
 
 @Entity()
-export class Point {
+export class PointEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -8,8 +8,8 @@ import {
 import { UserEntity } from './user.entity';
 
 export const TokenStatusConst = {
-  BLOCK: 'BLOCK',
-  ALLOW: 'ALLOW',
+  WAIT: 'WAIT',
+  ACTIVE: 'ACTIVE',
 } as const;
 
 export type TokenStatus =
@@ -24,7 +24,7 @@ export class TokenEntity {
   userId: number;
 
   @Column({ type: 'varchar' })
-  tokenId: string;
+  tokenValue: string;
 
   @Column({ type: 'timestamp' })
   issuedDate: Date;

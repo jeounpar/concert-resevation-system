@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Point } from './point.entity';
+import { PointEntity } from './point.entity';
 
 export const TransactionConst = {
   CHARGE: 'CHARGE',
@@ -39,8 +39,8 @@ export class PointLogEntity {
   @CreateDateColumn({ type: 'timestamp' })
   createDate: Date;
 
-  @ManyToOne(() => Point, (point) => point.logs, {
+  @ManyToOne(() => PointEntity, (point) => point.logs, {
     createForeignKeyConstraints: false,
   })
-  point: Point;
+  point: PointEntity;
 }

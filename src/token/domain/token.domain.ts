@@ -7,7 +7,7 @@ import { TokenExpired } from '../../error';
 export class TokenDomain {
   #id: number;
   #userId: number;
-  #tokenId: string;
+  #tokenValue: string;
   #issuedDate: Date;
   #expiredDate: Date;
   #status: TokenStatus;
@@ -20,7 +20,7 @@ export class TokenDomain {
     domain.#id = entity.id;
     domain.#userId = entity.userId;
     domain.#status = entity.status;
-    domain.#tokenId = entity.tokenId;
+    domain.#tokenValue = entity.tokenValue;
     domain.#issuedDate = entity.issuedDate;
     domain.#expiredDate = entity.expiredDate;
 
@@ -33,14 +33,14 @@ export class TokenDomain {
     entity.id = this.#id;
     entity.userId = this.#userId;
     entity.status = this.#status;
-    entity.tokenId = this.#tokenId;
+    entity.tokenValue = this.#tokenValue;
     entity.issuedDate = this.#issuedDate;
     entity.expiredDate = this.#expiredDate;
 
     return entity;
   }
 
-  static createBlockStatus({
+  static createWaitStatus({
     userId,
     nowDate,
   }: {
@@ -50,8 +50,8 @@ export class TokenDomain {
     const domain = new TokenDomain();
 
     domain.#userId = userId;
-    domain.#status = 'BLOCK';
-    domain.#tokenId = uuid();
+    domain.#status = 'WAIT';
+    domain.#tokenValue = uuid();
     domain.#issuedDate = nowDate;
     domain.#expiredDate = dayjs(nowDate)
       .add(TOKEN_POLICY.EXPIRED_TIME_SEC, 'seconds')
@@ -60,20 +60,20 @@ export class TokenDomain {
     return domain;
   }
 
-  setAllow() {
-    this.#status = 'ALLOW';
+  setActive() {
+    this.#status = 'ACTIVE';
   }
 
-  setBlock() {
-    this.#status = 'BLOCK';
+  setWait() {
+    this.#status = 'WAIT';
   }
 
-  isAllowed() {
-    return this.#status === 'ALLOW';
+  isActive() {
+    return this.#status === 'ACTIVE';
   }
 
-  isBlocked() {
-    return this.#status === 'BLOCK';
+  isWait() {
+    return this.#status === 'WAIT';
   }
 
   isExpired({ nowDate }: { nowDate: Date }) {
@@ -81,7 +81,7 @@ export class TokenDomain {
   }
 
   validateToken({ nowDate }: { nowDate: Date }) {
-    if (this.isBlocked() || this.isExpired({ nowDate }))
+    if (this.isWait() || this.isExpired({ nowDate }))
       throw new TokenExpired(
         `token is expired at ${this.#expiredDate.toISOString()}`,
       );
@@ -91,10 +91,14 @@ export class TokenDomain {
     return this.#id;
   }
 
+  tokenValue() {
+    return this.#tokenValue;
+  }
+
   info() {
     return {
       userId: this.#userId,
-      tokenId: this.#tokenId,
+      tokenValue: this.#tokenValue,
       issuedDate: this.#issuedDate,
       expiredDate: this.#expiredDate,
       status: this.#status,

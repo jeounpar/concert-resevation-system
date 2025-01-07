@@ -1,24 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TokenController } from './controller/token.controller';
-import { TokenScheduler } from './scheduler/token.scheduler';
-import { TokenFacade } from './service/token.facade';
-import { TokenReaderComponent } from './component/token-reader.component';
-import { TokenMutatorComponent } from './component/token-mutator.component';
+import { TokenService } from './service/token.service';
 import { UserModule } from '../user/user.module';
 import { TokenRepository } from './repository/token.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TokenEntity } from '../entity';
+import { TokenScheduler } from './controller/token.scheduler';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TokenEntity]), UserModule],
-  providers: [
-    TokenFacade,
-    TokenReaderComponent,
-    TokenMutatorComponent,
-    TokenRepository,
-    // TokenScheduler,
-  ],
+  providers: [TokenService, TokenRepository, TokenScheduler],
   controllers: [TokenController],
-  exports: [TokenReaderComponent],
 })
 export class TokenModule {}

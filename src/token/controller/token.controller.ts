@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { TokenFacade } from '../service/token.facade';
+import { TokenService } from '../service/token.service';
 import { TokenIssueDTO } from './token.dto';
 
 @Controller('token')
 export class TokenController {
-  constructor(private readonly tokenFacade: TokenFacade) {}
+  constructor(private readonly tokenFacade: TokenService) {}
 
   @Post('/issue')
   public async issueToken(@Body() body: TokenIssueDTO) {
@@ -13,9 +13,9 @@ export class TokenController {
     return token;
   }
 
-  @Get('/:tokenId/current-order')
-  public async getCurrentOrder(@Param('tokenId') tokenId: string) {
-    const currentOrder = await this.tokenFacade.getCurrentOrder({ tokenId });
+  @Get('/:tokenValue/current-order')
+  public async getCurrentOrder(@Param('tokenValue') tokenValue: string) {
+    const currentOrder = await this.tokenFacade.getCurrentOrder({ tokenValue });
 
     return {
       currentOrder,

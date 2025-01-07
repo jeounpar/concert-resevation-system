@@ -79,7 +79,7 @@ Score에 유저의 대기열 진입 시간을 넣어서 조금 더 빨리 진입
 1. 유저(userId)가 토큰 발급 API를 요청
 2. 해당 userId로 입장한 토큰이 있는지 Redis 조회
 
-- `Key = AllowUser:${userId}, Value = 토큰(uuid)`
+- `Key = ActiveUser:${userId}, Value = 토큰(uuid)`
 
 3. key에 해당하는 값이 존재한다면 해당 유저는 이미 입장을 한 유저이므로 토큰을 그대로 리턴
 4. key에 해당하는 값이 없다면 토큰 생성 후 Redis 대기열에 추가
