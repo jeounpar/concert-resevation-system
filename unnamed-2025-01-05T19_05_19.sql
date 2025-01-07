@@ -19,7 +19,6 @@ CREATE TABLE ConcertSchedule
   create_date TIMESTAMP NOT NULL,
   update_date TIMESTAMP NULL    ,
   delete_date TIMESTAMP NULL    ,
-  id          INTEGER   NOT NULL,
   PRIMARY KEY (id)
 ) COMMENT '콘서트 스케쥴 테이블';
 
@@ -32,6 +31,7 @@ CREATE TABLE ConcertScheduleSeat
   status              ENUM      NULL     COMMENT 'EMPTY | RESERVED | PAID',
   price               INTEGER   NULL     COMMENT '좌석에 대한 가격',
   create_date         TIMESTAMP NOT NULL,
+  expire_date         TIMESTAMP NULL    ,
   update_date         TIMESTAMP NULL    ,
   delete_date         TIMESTAMP NULL    ,
   PRIMARY KEY (id)

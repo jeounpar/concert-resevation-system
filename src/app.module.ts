@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from './config/config.module';
@@ -39,7 +44,14 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(TokenVerifyMiddleware)
-      .exclude('token', 'user')
+      .exclude(
+        { path: 'token', method: RequestMethod.ALL },
+        { path: 'token/(.*)', method: RequestMethod.ALL },
+        { path: 'user', method: RequestMethod.ALL },
+        { path: 'user/(.*)', method: RequestMethod.ALL },
+        { path: 'point', method: RequestMethod.ALL },
+        { path: 'point/(.*)', method: RequestMethod.ALL },
+      )
       .forRoutes('*');
   }
 }
