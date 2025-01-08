@@ -23,8 +23,8 @@ export class SeatEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int' })
-  userId: number;
+  @Column({ type: 'int', nullable: true })
+  userId: number | null;
 
   @Column({ type: 'int' })
   concertScheduleId: number;
@@ -41,8 +41,8 @@ export class SeatEntity {
   @CreateDateColumn({ type: 'timestamp' })
   createDate: Date;
 
-  @Column({ type: 'timestamp' })
-  expireDate: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  expireDate: Date | null;
 
   @UpdateDateColumn({ type: 'timestamp', nullable: true })
   updateDate: Date | null;

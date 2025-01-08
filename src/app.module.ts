@@ -16,8 +16,6 @@ import {
 import { TokenModule } from './token/token.module';
 import { ConcertModule } from './concert/concert.module';
 import { PointModule } from './point/point.module';
-import { OrderModule } from './order/order.module';
-import { UserModule } from './user/user.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokenVerifyMiddleware } from './middleware/token-verify.middleware';
 
@@ -34,8 +32,6 @@ import { TokenVerifyMiddleware } from './middleware/token-verify.middleware';
     TokenModule,
     ConcertModule,
     PointModule,
-    OrderModule,
-    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

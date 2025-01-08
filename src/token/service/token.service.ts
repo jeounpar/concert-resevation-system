@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { getDataSource } from '../../config/typeorm-factory';
-import { UserReaderComponent } from '../../user/user-reader.component';
 import { TokenRepository } from '../repository/token.repository';
 import { TokenDomain } from '../domain/token.domain';
 import { EntityManager } from 'typeorm';
@@ -9,10 +8,7 @@ import { NotFoundError, TokenNotFound } from '../../error';
 
 @Injectable()
 export class TokenService {
-  constructor(
-    private readonly userReader: UserReaderComponent,
-    private readonly tokenRepository: TokenRepository,
-  ) {}
+  constructor(private readonly tokenRepository: TokenRepository) {}
 
   async getCurrentOrder({ tokenValue }: { tokenValue: string }) {
     const myToken = await this.tokenRepository
@@ -31,9 +27,6 @@ export class TokenService {
   }
 
   async issue({ userId }: { userId: number }) {
-    const user = await this.userReader.getByUserId({ userId });
-    if (!user) throw new NotFoundError(`user with userId=${userId} not found`);
-
     return await getDataSource().transaction(async (mgr) => {
       const nowDate = new Date();
 

@@ -21,3 +21,9 @@ export class PointNotEnough extends Error {
     super(message);
   }
 }
+
+export class CannotReserveError extends Error {
+  public constructor(message: string) {
+    super(message);
+  }
+}

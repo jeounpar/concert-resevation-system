@@ -7,7 +7,7 @@ export const TOKEN_POLICY = {
   MAX_ACTIVE_TOKEN_COUNT: 5,
 } as const;
 
-export const ORDER_POLICY = {
+export const CONCERT_POLICY = {
   EXPIRED_TIME_MIN: 5, // MIN
-  SCHEDULE_INTERVAL_DELETE_EXPIRED_ORDER: ONE_SEC * 10, // MIN
+  SCHEDULE_INTERVAL_DELETE_EXPIRED_SEAT: ONE_SEC * 10, // sec
 } as const;

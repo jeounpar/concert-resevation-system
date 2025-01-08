@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TokenService } from './token.service';
 import { TokenRepository } from '../repository/token.repository';
-import { UserReaderComponent } from '../../user/user-reader.component';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { TokenDomain } from '../domain/token.domain';
@@ -21,7 +20,6 @@ describe('TokenService', () => {
   let module: TestingModule;
   let tokenService: TokenService;
   let tokenRepository: TokenRepository;
-  let userReader: UserReaderComponent;
   let dataSource: DataSource;
   let mysqlContainer: StartedMySqlContainer;
 
@@ -47,12 +45,11 @@ describe('TokenService', () => {
         }),
         TypeOrmModule.forFeature(getAllEntities()),
       ],
-      providers: [TokenService, TokenRepository, UserReaderComponent],
+      providers: [TokenService, TokenRepository],
     }).compile();
 
     tokenService = module.get<TokenService>(TokenService);
     tokenRepository = module.get<TokenRepository>(TokenRepository);
-    userReader = module.get<UserReaderComponent>(UserReaderComponent);
     dataSource = module.get<DataSource>(DataSource);
     setDataSource(dataSource);
   });
@@ -71,17 +68,9 @@ describe('TokenService', () => {
   });
 
   it('유저에게 토큰을 발급한다.', async () => {
-    jest.spyOn(userReader, 'getByUserId').mockResolvedValue(1);
     const token = await tokenService.issue({ userId: 1 });
     expect(token).toBeDefined();
     expect(token.userId).toBe(1);
-  });
-
-  it('토큰 발급 시 유저가 없으면 에러를 던진다.', async () => {
-    jest.spyOn(userReader, 'getByUserId').mockResolvedValue(null);
-    await expect(tokenService.issue({ userId: 999 })).rejects.toThrow(
-      NotFoundError,
-    );
   });
 
   it('토큰을 ACTIVE 상태로 변경한다.', async () => {
