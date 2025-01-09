@@ -11,6 +11,13 @@ export interface SeatResponse {
   price: number;
 }
 
+export interface SeatInfo {
+  seatId: number;
+  seatNumber: number;
+  status: SeatStatus;
+  price: number;
+}
+
 export class SeatDomain {
   #id: number;
   #userId: number | null;
@@ -109,7 +116,7 @@ export class SeatDomain {
     };
   }
 
-  toInfo() {
+  toInfo(): SeatInfo {
     return {
       seatId: this.#id,
       seatNumber: this.#seatNumber,
