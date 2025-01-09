@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConcertService } from './concert.service';
-import { SeatRepository } from '../repository/seat.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { getAllEntities, setDataSource } from '../../config/typeorm-factory';
@@ -13,6 +12,7 @@ import {
 } from '../../error';
 import * as dayjs from 'dayjs';
 import { CONCERT_POLICY } from '../../policy';
+import { ConcertModule } from '../concert.module';
 
 describe('ConcertService ', () => {
   jest.setTimeout(30000);
@@ -42,8 +42,8 @@ describe('ConcertService ', () => {
           logging: false,
         }),
         TypeOrmModule.forFeature(getAllEntities()),
+        ConcertModule,
       ],
-      providers: [ConcertService, SeatRepository],
     }).compile();
 
     concertService = module.get<ConcertService>(ConcertService);

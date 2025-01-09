@@ -20,11 +20,8 @@ export class ConcertScheduleEntity {
   @Column({ type: 'int' })
   concertId: number;
 
-  @Column({ type: 'time' })
-  startTime: string;
-
-  @Column({ type: 'time' })
-  endTime: string;
+  @Column({ type: 'varchar' })
+  theDateString: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createDate: Date;

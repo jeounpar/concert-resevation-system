@@ -108,4 +108,13 @@ export class SeatDomain {
       price: this.#price,
     };
   }
+
+  toInfo() {
+    return {
+      seatId: this.#id,
+      seatNumber: this.#seatNumber,
+      status: this.#status,
+      price: this.#price,
+    };
+  }
 }

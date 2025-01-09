@@ -14,6 +14,7 @@ import { TokenEntity, TokenStatusConst } from '../../entity';
 import * as dayjs from 'dayjs';
 import { TOKEN_POLICY } from '../../policy';
 import { NotFoundError, TokenExpired } from '../../error';
+import { TokenModule } from '../token.module';
 
 describe('TokenService', () => {
   jest.setTimeout(30000);
@@ -44,8 +45,8 @@ describe('TokenService', () => {
           logging: false,
         }),
         TypeOrmModule.forFeature(getAllEntities()),
+        TokenModule,
       ],
-      providers: [TokenService, TokenRepository],
     }).compile();
 
     tokenService = module.get<TokenService>(TokenService);

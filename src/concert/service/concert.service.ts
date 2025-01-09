@@ -3,11 +3,14 @@ import { SeatRepository } from '../repository/seat.repository';
 import { getDataSource } from '../../config/typeorm-factory';
 import { NotFoundError } from '../../error';
 import { EntityManager } from 'typeorm';
-import { SeatResponse } from '../domain/seat.domain';
+import { ConcertScheduleRepository } from '../repository/concert-schedule.repository';
 
 @Injectable()
 export class ConcertService {
-  constructor(private readonly seatRepository: SeatRepository) {}
+  constructor(
+    private readonly concertScheduleRepository: ConcertScheduleRepository,
+    private readonly seatRepository: SeatRepository,
+  ) {}
 
   async reserve({ seatId, userId }: { seatId: number; userId: number }) {
     const nowDate = new Date();
@@ -65,5 +68,41 @@ export class ConcertService {
         mgr,
       });
     });
+  }
+
+  // 예약 가능 날짜
+  async getAvailableTimes({ concertId }: { concertId: number }) {
+    const concertSchedules = await this.concertScheduleRepository
+      .findMany()
+      .concertId({ concertId });
+
+    if (concertSchedules.length === 0) return [];
+
+    return concertSchedules.map((e) => e.toResponse());
+  }
+
+  // 예약 가능 좌석
+  async getAvailableSeats({
+    concertId,
+    theDateString,
+  }: {
+    concertId: number;
+    theDateString: string;
+  }) {
+    const concertSchedule = await this.concertScheduleRepository
+      .findOne()
+      .concertIdAndTheDate({ concertId, theDateString });
+    if (!concertSchedule) throw new NotFoundError('concertSchedule not found');
+
+    const seats = await this.seatRepository
+      .findMany()
+      .concertScheduleId({ concertScheduleId: concertSchedule.id });
+    if (seats.length === 0) return [];
+
+    return {
+      concertId,
+      theDateString,
+      seatInfo: seats.map((e) => e.toResponse()),
+    };
   }
 }

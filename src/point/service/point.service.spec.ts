@@ -12,6 +12,7 @@ import {
 } from '../../config/typeorm-factory';
 import { NotFoundError, PointNotEnough } from '../../error';
 import { PointLogEntity, TransactionConst } from '../../entity';
+import { PointModule } from '../point.module';
 
 describe('PointService', () => {
   jest.setTimeout(30000);
@@ -43,8 +44,8 @@ describe('PointService', () => {
           logging: false,
         }),
         TypeOrmModule.forFeature(getAllEntities()),
+        PointModule,
       ],
-      providers: [PointService, PointRepository, PointLogRepository],
     }).compile();
 
     pointService = module.get<PointService>(PointService);
