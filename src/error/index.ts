@@ -27,3 +27,9 @@ export class CannotReserveError extends Error {
     super(message);
   }
 }
+
+export class CannotPaidError extends Error {
+  public constructor(message: string) {
+    super(message);
+  }
+}

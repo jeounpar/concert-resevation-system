@@ -21,6 +21,7 @@ import { ConcertEntity, ConcertScheduleEntity, SeatEntity } from '../entity';
     ConcertRepository,
     SeatRepository,
   ],
+  exports: [ConcertService],
   controllers: [ConcertController],
 })
 export class ConcertModule {}

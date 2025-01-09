@@ -1,7 +1,15 @@
 import { SeatEntity, SeatStatus } from '../../entity';
-import { CannotReserveError } from '../../error';
+import { CannotPaidError, CannotReserveError } from '../../error';
 import * as dayjs from 'dayjs';
 import { CONCERT_POLICY } from '../../policy';
+
+export interface SeatResponse {
+  userId: number;
+  seatNumber: number;
+  status: SeatStatus;
+  expiredDate: Date;
+  price: number;
+}
 
 export class SeatDomain {
   #id: number;
@@ -51,6 +59,7 @@ export class SeatDomain {
         `seat status is ${this.#status}. cannot reserve`,
       );
   }
+
   validatePaid({ userId, nowDate }: { userId: number; nowDate: Date }) {
     if (
       this.isEmpty() ||
@@ -58,9 +67,7 @@ export class SeatDomain {
       this.isExpired({ nowDate }) ||
       this.#userId !== userId
     )
-      throw new CannotReserveError(
-        `seat status is ${this.#status}. cannot reserve`,
-      );
+      throw new CannotPaidError('cannot paid');
   }
 
   isExpired({ nowDate }: { nowDate: Date }) {
@@ -92,7 +99,7 @@ export class SeatDomain {
     return this.#status === 'PAID';
   }
 
-  toResponse() {
+  toResponse(): SeatResponse {
     return {
       userId: this.#userId,
       seatNumber: this.#seatNumber,

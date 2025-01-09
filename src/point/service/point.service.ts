@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PointRepository } from '../repository/point.repository';
 import { PointLogRepository } from '../repository/point-log.repository';
 import { getDataSource } from '../../config/typeorm-factory';
-import { PointDomain } from '../domain/point.domain';
+import { PointDomain, PointResponse } from '../domain/point.domain';
 import { NotFoundError } from '../../error';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class PointService {
@@ -14,6 +15,25 @@ export class PointService {
 
   async getByUserId({ userId }: { userId: number }) {
     const point = await this.pointRepository.findOne().userId({ userId });
+    if (!point)
+      return {
+        userId,
+        remainPoint: 0,
+      };
+
+    return point.toResponse();
+  }
+
+  async getByUserIdWithLock({
+    userId,
+    mgr,
+  }: {
+    userId: number;
+    mgr: EntityManager;
+  }) {
+    const point = await this.pointRepository
+      .findOne(mgr)
+      .userIdWithLock({ userId });
     if (!point)
       return {
         userId,
@@ -50,10 +70,18 @@ export class PointService {
     });
   }
 
-  async use({ userId, amount }: { userId: number; amount: number }) {
-    return await getDataSource().transaction(async (mgr) => {
+  async use({
+    userId,
+    amount,
+    mgr,
+  }: {
+    userId: number;
+    amount: number;
+    mgr?: EntityManager;
+  }): Promise<PointResponse> {
+    const execute = async (transaction: EntityManager) => {
       const point = await this.pointRepository
-        .findOne(mgr)
+        .findOne(transaction)
         .userIdWithLock({ userId });
 
       if (!point) throw new NotFoundError(`userId=${userId} point not found`);
@@ -61,10 +89,19 @@ export class PointService {
       const pointLog = point.use({ amount });
       const savedPoint = await this.pointRepository.save({
         domain: point,
-        mgr,
+        mgr: transaction,
       });
-      await this.pointLogRepository.save({ domain: pointLog, mgr });
+
+      await this.pointLogRepository.save({
+        domain: pointLog,
+        mgr: transaction,
+      });
+
       return savedPoint.toResponse();
-    });
+    };
+
+    return mgr
+      ? await execute(mgr)
+      : await getDataSource().transaction(execute);
   }
 }

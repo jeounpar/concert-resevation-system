@@ -2,6 +2,11 @@ import { PointEntity } from '../../entity';
 import { PointNotEnough } from '../../error';
 import { PointLogDomain } from './point-log.domain';
 
+export interface PointResponse {
+  userId: number;
+  remainPoint: number;
+}
+
 export class PointDomain {
   #id: number;
   #userId: number;
@@ -75,7 +80,7 @@ export class PointDomain {
     });
   }
 
-  toResponse() {
+  toResponse(): PointResponse {
     return {
       userId: this.#userId,
       remainPoint: this.#remainPoint,

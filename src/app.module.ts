@@ -18,6 +18,7 @@ import { ConcertModule } from './concert/concert.module';
 import { PointModule } from './point/point.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokenVerifyMiddleware } from './middleware/token-verify.middleware';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TokenVerifyMiddleware } from './middleware/token-verify.middleware';
     TokenModule,
     ConcertModule,
     PointModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

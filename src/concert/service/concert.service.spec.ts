@@ -6,7 +6,11 @@ import { DataSource } from 'typeorm';
 import { getAllEntities, setDataSource } from '../../config/typeorm-factory';
 import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
 import { SeatEntity } from '../../entity';
-import { CannotReserveError, NotFoundError } from '../../error';
+import {
+  CannotPaidError,
+  CannotReserveError,
+  NotFoundError,
+} from '../../error';
 import * as dayjs from 'dayjs';
 import { CONCERT_POLICY } from '../../policy';
 
@@ -218,7 +222,7 @@ describe('ConcertService ', () => {
           userId,
           nowDate,
         }),
-      ).rejects.toThrow(CannotReserveError);
+      ).rejects.toThrow(CannotPaidError);
     });
 
     it('예약한 유저외에 다른 유저는 해당 좌석을 결제할 수 없다.', async () => {
@@ -244,7 +248,7 @@ describe('ConcertService ', () => {
           userId: 999,
           nowDate,
         }),
-      ).rejects.toThrow(CannotReserveError);
+      ).rejects.toThrow(CannotPaidError);
     });
   });
 
