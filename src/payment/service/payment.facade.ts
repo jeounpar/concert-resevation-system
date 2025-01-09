@@ -3,12 +3,14 @@ import { ConcertService } from '../../concert/service/concert.service';
 import { PointService } from '../../point/service/point.service';
 import { getDataSource } from '../../config/typeorm-factory';
 import { EntityManager } from 'typeorm';
+import { TokenService } from '../../token/service/token.service';
 
 @Injectable()
 export class PaymentFacade {
   constructor(
     private readonly concertService: ConcertService,
     private readonly pointService: PointService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async concertPayment({ seatId, userId }: { seatId: number; userId: number }) {
@@ -26,6 +28,7 @@ export class PaymentFacade {
         amount: concertResponse.price,
         mgr,
       });
+      await this.tokenService.deleteTokenByUserId({ userId, mgr });
 
       return {
         concertInfo: concertResponse,

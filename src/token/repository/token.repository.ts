@@ -51,6 +51,18 @@ export class TokenRepository {
       .execute();
   }
 
+  async deleteByUserId({
+    userId,
+    mgr,
+  }: {
+    userId: number;
+    mgr?: EntityManager;
+  }) {
+    const repo = this.#getRepo(mgr);
+
+    await repo.softDelete({ userId });
+  }
+
   findMany(mgr?: EntityManager) {
     const repo = this.#getRepo(mgr);
 
