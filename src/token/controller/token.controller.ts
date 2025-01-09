@@ -26,7 +26,7 @@ export class TokenController {
   }
 
   @Get('/:tokenValue/current-order')
-  @ApiOperation({ summary: '현재 주문 정보 조회' })
+  @ApiOperation({ summary: '현재 대기열 순서 조회' })
   @ApiResponse({
     status: 200,
     description: '현재 대기열 순서',
