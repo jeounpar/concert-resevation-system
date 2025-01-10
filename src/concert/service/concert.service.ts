@@ -4,6 +4,7 @@ import { getDataSource } from '../../config/typeorm-factory';
 import { NotFoundError } from '../../error';
 import { EntityManager } from 'typeorm';
 import { ConcertScheduleRepository } from '../repository/concert-schedule.repository';
+import { AvailableSeatsResponseDTO } from '../controller/concert.dto';
 
 @Injectable()
 export class ConcertService {
@@ -88,7 +89,7 @@ export class ConcertService {
   }: {
     concertId: number;
     theDateString: string;
-  }) {
+  }): Promise<AvailableSeatsResponseDTO> {
     const concertSchedule = await this.concertScheduleRepository
       .findOne()
       .concertIdAndTheDate({ concertId, theDateString });
@@ -97,12 +98,17 @@ export class ConcertService {
     const seats = await this.seatRepository
       .findMany()
       .concertScheduleId({ concertScheduleId: concertSchedule.id });
-    if (seats.length === 0) return [];
+    if (seats.length === 0)
+      return {
+        concertId,
+        theDateString,
+        seatInfo: [],
+      };
 
     return {
       concertId,
       theDateString,
-      seatInfo: seats.map((e) => e.toResponse()),
+      seatInfo: seats.map((e) => e.toInfo()),
     };
   }
 }
