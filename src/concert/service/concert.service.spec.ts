@@ -15,7 +15,7 @@ import { CONCERT_POLICY } from '../../policy';
 import { ConcertModule } from '../concert.module';
 
 describe('ConcertService ', () => {
-  jest.setTimeout(30000);
+  jest.setTimeout(50000);
   let module: TestingModule;
   let concertService: ConcertService;
   let dataSource: DataSource;

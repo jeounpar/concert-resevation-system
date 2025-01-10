@@ -77,6 +77,16 @@ export class TokenService {
     });
   }
 
+  async deleteTokenByUserId({
+    userId,
+    mgr,
+  }: {
+    userId: number;
+    mgr?: EntityManager;
+  }) {
+    await this.tokenRepository.deleteByUserId({ userId, mgr });
+  }
+
   async deleteExpiredToken({
     nowDate,
     mgr,
@@ -112,7 +122,7 @@ export class TokenService {
       .tokenValue({ tokenValue });
     if (!token)
       throw new TokenNotFound(
-        'token with tokenValue=${tokenValue} is not found',
+        `token with tokenValue=${tokenValue} is not found`,
       );
     token.validateToken({ nowDate });
   }

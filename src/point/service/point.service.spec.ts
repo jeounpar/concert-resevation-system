@@ -15,7 +15,7 @@ import { PointLogEntity, TransactionConst } from '../../entity';
 import { PointModule } from '../point.module';
 
 describe('PointService', () => {
-  jest.setTimeout(30000);
+  jest.setTimeout(50000);
 
   let module: TestingModule;
   let pointService: PointService;

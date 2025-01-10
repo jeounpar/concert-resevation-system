@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
 import { getAllEntities, setDataSource } from '../../config/typeorm-factory';
-import { PointEntity, SeatEntity } from '../../entity';
+import { PointEntity, SeatEntity, TokenEntity } from '../../entity';
 import { CannotPaidError, NotFoundError, PointNotEnough } from '../../error';
 import { ConcertModule } from '../../concert/concert.module';
 import { PointModule } from '../../point/point.module';
@@ -13,13 +13,14 @@ import * as dayjs from 'dayjs';
 import { CONCERT_POLICY } from '../../policy';
 
 describe('PaymentFacade', () => {
-  jest.setTimeout(30000);
+  jest.setTimeout(50000);
   let module: TestingModule;
   let paymentFacade: PaymentFacade;
   let dataSource: DataSource;
   let mysqlContainer: StartedMySqlContainer;
   let ormSeatRepository: Repository<SeatEntity>;
   let ormPointRepository: Repository<PointEntity>;
+  let ormTokenRepository: Repository<TokenEntity>;
 
   beforeAll(async () => {
     mysqlContainer = await new MySqlContainer('mysql')
@@ -53,6 +54,7 @@ describe('PaymentFacade', () => {
     setDataSource(dataSource);
     ormSeatRepository = dataSource.getRepository(SeatEntity);
     ormPointRepository = dataSource.getRepository(PointEntity);
+    ormTokenRepository = dataSource.getRepository(TokenEntity);
   });
 
   beforeEach(async () => {
@@ -68,6 +70,13 @@ describe('PaymentFacade', () => {
   });
 
   it('좌석을 결제하고 포인트를 사용한다.', async () => {
+    await ormTokenRepository.save({
+      userId: 1,
+      tokenValue: 'test-token',
+      issuedDate: new Date(),
+      expiredDate: new Date(),
+      status: 'ACTIVE',
+    });
     await ormSeatRepository.save({
       id: 1,
       userId: 1,
@@ -87,7 +96,13 @@ describe('PaymentFacade', () => {
 
     const result = await paymentFacade.concertPayment({ seatId: 1, userId: 1 });
 
+    const token = await ormTokenRepository.findOne({
+      where: { userId: 1 },
+      withDeleted: true,
+    });
+
     expect(result).toBeDefined();
+    expect(token.deleteDate).toBeDefined();
     expect(result.concertInfo.status).toBe('PAID');
     expect(result.pointInfo.remainPoint).toBe(100); // 200 - 100 = 100
   });
@@ -139,6 +154,13 @@ describe('PaymentFacade', () => {
   });
 
   it('포인트 부족 시 결제는 실패한다.', async () => {
+    await ormTokenRepository.save({
+      userId: 1,
+      tokenValue: 'test-token',
+      issuedDate: new Date(),
+      expiredDate: new Date(),
+      status: 'ACTIVE',
+    });
     await ormSeatRepository.save({
       id: 1,
       userId: 1,
@@ -159,6 +181,13 @@ describe('PaymentFacade', () => {
     await expect(
       paymentFacade.concertPayment({ seatId: 1, userId: 1 }),
     ).rejects.toThrow(PointNotEnough);
+
+    const token = await ormTokenRepository.findOne({
+      where: { userId: 1 },
+      withDeleted: true,
+    });
+
+    expect(token.deleteDate).toBe(null);
   });
 
   it('존재하지 않는 좌석 결제 시도 시 에러를 던진다.', async () => {

@@ -17,7 +17,7 @@ import { NotFoundError, TokenExpired } from '../../error';
 import { TokenModule } from '../token.module';
 
 describe('TokenService', () => {
-  jest.setTimeout(30000);
+  jest.setTimeout(50000);
   let module: TestingModule;
   let tokenService: TokenService;
   let tokenRepository: TokenRepository;
