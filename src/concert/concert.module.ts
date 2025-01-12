@@ -6,6 +6,7 @@ import { ConcertScheduleRepository } from './repository/concert-schedule.reposit
 import { SeatRepository } from './repository/seat.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConcertEntity, ConcertScheduleEntity, SeatEntity } from '../entity';
+import { LogModule } from '../log/log.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ConcertEntity, ConcertScheduleEntity, SeatEntity } from '../entity';
       ConcertScheduleEntity,
       SeatEntity,
     ]),
+    LogModule,
   ],
   providers: [
     ConcertScheduler,
