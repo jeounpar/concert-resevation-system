@@ -19,6 +19,7 @@ import { PointModule } from './point/point.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokenVerifyMiddleware } from './middleware/token-verify.middleware';
 import { PaymentModule } from './payment/payment.module';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PaymentModule } from './payment/payment.module';
     ConcertModule,
     PointModule,
     PaymentModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
