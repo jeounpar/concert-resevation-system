@@ -21,10 +21,13 @@ export class LoggingInterceptor implements NestInterceptor {
     const params = JSON.stringify(request.params);
     const query = JSON.stringify(request.query);
     const start = Date.now();
+    const tokenValue = request.headers['x-queue-token']
+      ? request.headers['x-queue-token']
+      : '';
 
     this.logger.log(
       'Request',
-      `method=${method}, url=${url}, body=${body}, params=${params}, query=${query}`,
+      `method=[${method}], url=[${url}], body=[${body}], params=[${params}], query=[${query}], token=[${tokenValue}]`,
     );
 
     return next.handle().pipe(
@@ -32,7 +35,7 @@ export class LoggingInterceptor implements NestInterceptor {
         const elapsedMS = Date.now() - start;
         this.logger.log(
           'Response',
-          `method=${method}, url=${url}, status=${response.statusCode}, elapsedMS=[${elapsedMS}ms], response=${JSON.stringify(resBody)}`,
+          `method=[${method}], url=[${url}], status=[${response.statusCode}], elapsedMS=[${elapsedMS}ms], response=[${JSON.stringify(resBody)}]`,
         );
       }),
     );
