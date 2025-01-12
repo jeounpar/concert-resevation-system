@@ -1,22 +1,18 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ConsoleLogger,
-  ExceptionFilter,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import {
   AuthenticationError,
   BaseBusinessError,
   InternalServerError,
 } from '../error';
 import { Request, Response } from 'express';
+import { MyCustomLogger } from '../log/my-custom-logger';
 
 @Catch(Error)
 export class MyCustomExceptionFilter implements ExceptionFilter {
-  private _logger: ConsoleLogger;
+  private logger: MyCustomLogger;
 
-  constructor(logger: ConsoleLogger) {
-    this._logger = logger;
+  constructor(logger: MyCustomLogger) {
+    this.logger = logger;
   }
 
   catch(error: Error, host: ArgumentsHost) {
@@ -24,9 +20,9 @@ export class MyCustomExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const statusCode = this._defineStatusCode(error);
-    const errorCode = this._defineErrorCode(error);
-    const metaData = this._defineMetaData(error);
+    const statusCode = this.#defineStatusCode(error);
+    const errorCode = this.#defineErrorCode(error);
+    const metaData = this.#defineMetaData(error);
     const message = error.message ? error.message : '';
 
     response.status(statusCode).json({
@@ -37,10 +33,11 @@ export class MyCustomExceptionFilter implements ExceptionFilter {
       metaData: metaData,
     });
 
-    if (error.stack) this._logger.debug(error.stack);
+    this.logger.debug('Catch', error.message);
+    if (error.stack) this.logger.error('Catch', error.stack);
   }
 
-  private _defineStatusCode(error: Error): number {
+  #defineStatusCode(error: Error): number {
     if (
       error instanceof BaseBusinessError ||
       error instanceof AuthenticationError ||
@@ -51,7 +48,7 @@ export class MyCustomExceptionFilter implements ExceptionFilter {
     return 500;
   }
 
-  private _defineErrorCode(error: Error): string {
+  #defineErrorCode(error: Error): string {
     if (
       error instanceof BaseBusinessError ||
       error instanceof AuthenticationError ||
@@ -62,7 +59,7 @@ export class MyCustomExceptionFilter implements ExceptionFilter {
     return 'UNEXPECTED_ERROR';
   }
 
-  private _defineMetaData(error: Error): object {
+  #defineMetaData(error: Error): object {
     if (
       error instanceof BaseBusinessError ||
       error instanceof AuthenticationError ||
