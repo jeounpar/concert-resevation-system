@@ -5,9 +5,10 @@ import { TokenRepository } from './repository/token.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TokenEntity } from '../entity';
 import { TokenScheduler } from './controller/token.scheduler';
+import { LogModule } from '../log/log.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TokenEntity])],
+  imports: [TypeOrmModule.forFeature([TokenEntity]), LogModule],
   providers: [TokenService, TokenRepository, TokenScheduler],
   controllers: [TokenController],
   exports: [TokenService],

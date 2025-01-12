@@ -20,6 +20,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TokenVerifyMiddleware } from './middleware/token-verify.middleware';
 import { PaymentModule } from './payment/payment.module';
 import { LogModule } from './log/log.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from './interceptor/my-logging.interceptor';
+import { GenerateRequestIdMiddleware } from './middleware/generate-request-id.middleware';
 
 @Module({
   imports: [
@@ -38,10 +41,17 @@ import { LogModule } from './log/log.module';
     LogModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(GenerateRequestIdMiddleware).forRoutes('*');
     consumer
       .apply(TokenVerifyMiddleware)
       .exclude(

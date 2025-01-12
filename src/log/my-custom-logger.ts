@@ -1,28 +1,49 @@
 import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { AsyncLocalStorageService } from './async-local-storage.service';
 
 @Injectable()
 export class MyCustomLogger extends ConsoleLogger {
-  constructor(context?: string) {
+  constructor(
+    context: string,
+    private readonly asyncLocalStorageService: AsyncLocalStorageService,
+  ) {
     super(context);
   }
 
-  log(message: string) {
-    super.log(`[Log] ${message}`);
+  #getRequestId(): string {
+    return (
+      this.asyncLocalStorageService.get<string>('requestId') ||
+      'unknown-request'
+    );
   }
 
-  error(message: string, trace?: string) {
-    super.error(`[Error] ${message}`, trace);
+  log(methodName: string, message?: string, optionalParams?: any) {
+    super.log(
+      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
+    );
   }
 
-  warn(message: string) {
-    super.warn(`[Warn] ${message}`);
+  error(methodName: string, message?: string, optionalParams?: any) {
+    super.error(
+      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
+    );
   }
 
-  debug(message: string) {
-    super.debug(`[Debug] ${message}`);
+  warn(methodName: string, message?: string, optionalParams?: any) {
+    super.warn(
+      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
+    );
   }
 
-  verbose(message: string) {
-    super.verbose(`[Verbose] ${message}`);
+  debug(methodName: string, message?: string, optionalParams?: any) {
+    super.debug(
+      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
+    );
+  }
+
+  verbose(methodName: string, message?: string, optionalParams?: any) {
+    super.verbose(
+      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
+    );
   }
 }
