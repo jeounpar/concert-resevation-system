@@ -33,7 +33,7 @@ export class MyCustomExceptionFilter implements ExceptionFilter {
       metaData: metaData,
     });
 
-    this.logger.debug('Catch', error.message);
+    this.logger.error('Catch', error.message);
     if (error.stack) this.logger.error('Catch', error.stack);
   }
 

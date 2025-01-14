@@ -1,13 +1,31 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AsyncLocalStorageService } from './async-local-storage.service';
+import * as winston from 'winston';
+import { LoggerService } from '@nestjs/common';
 
 @Injectable()
-export class MyCustomLogger extends ConsoleLogger {
+export class MyCustomLogger implements LoggerService {
+  private readonly logger: winston.Logger;
+
   constructor(
-    context: string,
     private readonly asyncLocalStorageService: AsyncLocalStorageService,
   ) {
-    super(context);
+    this.logger = winston.createLogger({
+      level: 'info',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(({ timestamp, level, message }) => {
+          return `${timestamp} [${level.toUpperCase()}] ${message}`;
+        }),
+      ),
+      transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({
+          filename: 'logs/app.log',
+          level: 'info',
+        }),
+      ],
+    });
   }
 
   #getRequestId(): string {
@@ -17,33 +35,33 @@ export class MyCustomLogger extends ConsoleLogger {
     );
   }
 
+  #formatMessage(
+    methodName: string,
+    message?: string,
+    optionalParams?: any,
+  ): string {
+    return `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`;
+  }
+
   log(methodName: string, message?: string, optionalParams?: any) {
-    super.log(
-      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
-    );
+    this.logger.info(this.#formatMessage(methodName, message, optionalParams));
   }
 
   error(methodName: string, message?: string, optionalParams?: any) {
-    super.error(
-      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
-    );
+    this.logger.error(this.#formatMessage(methodName, message, optionalParams));
   }
 
   warn(methodName: string, message?: string, optionalParams?: any) {
-    super.warn(
-      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
-    );
+    this.logger.warn(this.#formatMessage(methodName, message, optionalParams));
   }
 
   debug(methodName: string, message?: string, optionalParams?: any) {
-    super.debug(
-      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
-    );
+    this.logger.debug(this.#formatMessage(methodName, message, optionalParams));
   }
 
   verbose(methodName: string, message?: string, optionalParams?: any) {
-    super.verbose(
-      `requestId=[${this.#getRequestId()}], methodName=[${methodName}], message=[${message}], optionalParams=[${optionalParams ? JSON.stringify(optionalParams) : ''}]`,
+    this.logger.verbose(
+      this.#formatMessage(methodName, message, optionalParams),
     );
   }
 }
