@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SeatEntity } from '../../entity';
 import { EntityManager, Repository } from 'typeorm';
 import { SeatDomain } from '../domain/seat.domain';
+import { NotFoundError } from '../../error';
 
 @Injectable()
 export class SeatRepository {
@@ -51,6 +52,20 @@ export class SeatRepository {
         const entity = await repo.findOne({
           where: { id },
           lock: { mode: 'pessimistic_write' },
+        });
+
+        return entity ? SeatDomain.fromEntity(entity) : null;
+      },
+      async idWithOptimisticLock({ id }: { id: number }) {
+        if (!mgr) throw new Error('EntityManager does not exist');
+
+        const existEntity = await repo.findOne({ where: { id } });
+        if (!existEntity)
+          throw new NotFoundError(`seatId=${id} entity not found`);
+
+        const entity = await repo.findOne({
+          where: { id },
+          lock: { mode: 'optimistic', version: existEntity.version },
         });
 
         return entity ? SeatDomain.fromEntity(entity) : null;

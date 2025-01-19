@@ -7,6 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  VersionColumn,
 } from 'typeorm';
 import { ConcertScheduleEntity } from './concert-schedule.entity';
 
@@ -55,4 +56,7 @@ export class SeatEntity {
   })
   @JoinColumn({ name: 'concert_schedule_id' })
   concertSchedule: ConcertScheduleEntity;
+
+  @VersionColumn()
+  version: number;
 }
