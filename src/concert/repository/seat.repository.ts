@@ -45,7 +45,7 @@ export class SeatRepository {
     const repo = this.#getRepo(mgr);
 
     return {
-      async idWithLock({ id }: { id: number }) {
+      async idWithPessimisticLock({ id }: { id: number }) {
         if (!mgr) throw new Error('EntityManager does not exist');
 
         const entity = await repo.findOne({

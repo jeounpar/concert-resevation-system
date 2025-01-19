@@ -22,7 +22,7 @@ export class ConcertService {
     return await getDataSource().transaction(async (mgr) => {
       const seat = await this.seatRepository
         .findOne(mgr)
-        .idWithLock({ id: seatId });
+        .idWithPessimisticLock({ id: seatId });
       if (!seat) throw new NotFoundError('seat not found');
       this.logger.log('reserve', 'seat info', seat.toInfo());
 
@@ -52,7 +52,7 @@ export class ConcertService {
     const execute = async (transaction: EntityManager) => {
       const seat = await this.seatRepository
         .findOne(transaction)
-        .idWithLock({ id: seatId });
+        .idWithPessimisticLock({ id: seatId });
       if (!seat) throw new NotFoundError('seat not found');
       this.logger.log('paid', 'seat info', seat.toInfo());
 
