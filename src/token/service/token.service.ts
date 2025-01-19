@@ -5,10 +5,14 @@ import { TokenDomain } from '../domain/token.domain';
 import { EntityManager } from 'typeorm';
 import { TOKEN_POLICY } from '../../policy';
 import { NotFoundError, TokenNotFound } from '../../error';
+import { MyCustomLogger } from '../../log/my-custom-logger';
 
 @Injectable()
 export class TokenService {
-  constructor(private readonly tokenRepository: TokenRepository) {}
+  constructor(
+    private readonly tokenRepository: TokenRepository,
+    private readonly logger: MyCustomLogger,
+  ) {}
 
   async getCurrentOrder({ tokenValue }: { tokenValue: string }) {
     const myToken = await this.tokenRepository

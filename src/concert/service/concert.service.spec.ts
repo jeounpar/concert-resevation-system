@@ -58,7 +58,7 @@ describe('ConcertService ', () => {
 
   afterAll(async () => {
     await module.close();
-    await mysqlContainer.stop(); // MySQL 컨테이너 종료
+    await mysqlContainer.stop();
   });
 
   describe('좌석 예약 ', () => {
