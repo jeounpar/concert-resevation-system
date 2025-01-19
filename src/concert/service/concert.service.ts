@@ -6,10 +6,12 @@ import { EntityManager } from 'typeorm';
 import { ConcertScheduleRepository } from '../repository/concert-schedule.repository';
 import { AvailableSeatsResponseDTO } from '../controller/concert.dto';
 import { MyCustomLogger } from '../../log/my-custom-logger';
+import { RedisSpinLock, SpinLockWithTransaction } from '../../redis';
 
 @Injectable()
 export class ConcertService {
   constructor(
+    private readonly redisSpinLock: RedisSpinLock,
     private readonly concertScheduleRepository: ConcertScheduleRepository,
     private readonly seatRepository: SeatRepository,
     private readonly logger: MyCustomLogger,
@@ -65,6 +67,29 @@ export class ConcertService {
         throw new CannotReserveError('cannot reservation.');
       }
     });
+  }
+
+  @SpinLockWithTransaction('reserve-seat', 5000, 5, 200)
+  async reserveWithRedisLock(
+    {
+      seatId,
+      userId,
+    }: {
+      seatId: number;
+      userId: number;
+    },
+    mgr?: EntityManager,
+  ) {
+    const nowDate = new Date();
+
+    const seat = await this.seatRepository.findOne(mgr).id({ id: seatId });
+    if (!seat) throw new NotFoundError('Seat not found');
+
+    seat.validateReservation();
+    seat.reserve({ userId, nowDate });
+
+    const saved = await this.seatRepository.save({ domain: seat, mgr });
+    return saved.toResponse();
   }
 
   async paid({
