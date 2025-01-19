@@ -23,6 +23,10 @@ import { LogModule } from './log/log.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './interceptor/my-logging.interceptor';
 import { GenerateRequestIdMiddleware } from './middleware/generate-request-id.middleware';
+import { RedisConfig } from './config/config.redis';
+import { redisOptionsFactory } from './config/redis-factory';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { RedisSpinLockModule } from './redis';
 
 @Module({
   imports: [
@@ -33,12 +37,18 @@ import { GenerateRequestIdMiddleware } from './middleware/generate-request-id.mi
       useFactory: dataSourceOptionsFactory,
       dataSourceFactory: dataSourceFactory,
     }),
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [RedisConfig],
+      useFactory: redisOptionsFactory,
+    }),
     ScheduleModule.forRoot(),
     TokenModule,
     ConcertModule,
     PointModule,
     PaymentModule,
     LogModule,
+    RedisSpinLockModule,
   ],
   controllers: [AppController],
   providers: [
