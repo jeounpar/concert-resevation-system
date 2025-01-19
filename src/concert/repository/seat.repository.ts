@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SeatEntity } from '../../entity';
 import { EntityManager, Repository } from 'typeorm';
 import { SeatDomain } from '../domain/seat.domain';
-import { NotFoundError } from '../../error';
 
 @Injectable()
 export class SeatRepository {
@@ -20,8 +19,31 @@ export class SeatRepository {
     const repo = this.#getRepo(mgr);
 
     const saved = await repo.save(domain.toEntity());
-
     return SeatDomain.fromEntity(saved);
+  }
+
+  async saveWithVersion({
+    domain,
+    mgr,
+  }: {
+    domain: SeatDomain;
+    mgr?: EntityManager;
+  }) {
+    const repo = this.#getRepo(mgr);
+
+    const updateEntity = domain.toUpdate();
+    const result = await repo.update(
+      updateEntity.criteria,
+      updateEntity.partialEntity,
+    );
+    if (result.affected === 0) {
+      throw new Error('Optimistic lock conflict. Reservation failed.');
+    }
+
+    const found = await repo.findOne({
+      where: { id: updateEntity.criteria.id },
+    });
+    return SeatDomain.fromEntity(found);
   }
 
   async changeStatusToEmptyWithExpiredSeat({
@@ -56,16 +78,11 @@ export class SeatRepository {
 
         return entity ? SeatDomain.fromEntity(entity) : null;
       },
-      async idWithOptimisticLock({ id }: { id: number }) {
+      async id({ id }: { id: number }) {
         if (!mgr) throw new Error('EntityManager does not exist');
-
-        const existEntity = await repo.findOne({ where: { id } });
-        if (!existEntity)
-          throw new NotFoundError(`seatId=${id} entity not found`);
 
         const entity = await repo.findOne({
           where: { id },
-          lock: { mode: 'optimistic', version: existEntity.version },
         });
 
         return entity ? SeatDomain.fromEntity(entity) : null;

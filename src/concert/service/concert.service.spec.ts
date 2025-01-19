@@ -77,7 +77,7 @@ describe('ConcertService ', () => {
           .toDate(),
       });
 
-      const result = await concertService.reserve({
+      const result = await concertService.reserveWithPessimisticLock({
         seatId: 1,
         userId: 1,
       });
@@ -108,13 +108,13 @@ describe('ConcertService ', () => {
       ]);
 
       await expect(
-        concertService.reserve({
+        concertService.reserveWithPessimisticLock({
           seatId: 1,
           userId: 1,
         }),
       ).rejects.toThrow(CannotReserveError);
       await expect(
-        concertService.reserve({
+        concertService.reserveWithPessimisticLock({
           seatId: 2,
           userId: 1,
         }),
@@ -135,7 +135,10 @@ describe('ConcertService ', () => {
       const userIds = Array.from({ length: 10 }, (_, i) => i + 1);
       const reservationPromises = userIds.map(async (userId) => {
         try {
-          return await concertService.reserve({ seatId: 1, userId });
+          return await concertService.reserveWithPessimisticLock({
+            seatId: 1,
+            userId,
+          });
         } catch (error) {
           return error;
         }
@@ -167,7 +170,7 @@ describe('ConcertService ', () => {
 
     it('존재하지 않는 좌석 예약 시도 시 에러를 던진다.', async () => {
       await expect(
-        concertService.reserve({ seatId: 999, userId: 1 }),
+        concertService.reserveWithPessimisticLock({ seatId: 999, userId: 1 }),
       ).rejects.toThrow(NotFoundError);
     });
   });

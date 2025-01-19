@@ -28,6 +28,7 @@ export class SeatDomain {
   #createDate: Date;
   #expireDate: Date | null;
   #updateDate: Date | null;
+  #version: number;
 
   static fromEntity(entity: SeatEntity): SeatDomain {
     const domain = new SeatDomain();
@@ -41,6 +42,7 @@ export class SeatDomain {
     domain.#createDate = entity.createDate;
     domain.#expireDate = entity.expireDate;
     domain.#updateDate = entity.updateDate;
+    domain.#version = entity.version;
 
     return domain;
   }
@@ -56,8 +58,25 @@ export class SeatDomain {
     entity.price = this.#price;
     entity.createDate = this.#createDate;
     entity.expireDate = this.#expireDate;
+    entity.version = this.#version;
 
     return entity;
+  }
+
+  toUpdate() {
+    return {
+      criteria: {
+        id: this.#id,
+        version: this.#version,
+      },
+      partialEntity: {
+        concertScheduleId: this.#concertScheduleId,
+        userId: this.#userId,
+        seatNumber: this.#seatNumber,
+        status: this.#status,
+        price: this.#price,
+      },
+    };
   }
 
   validateReservation() {

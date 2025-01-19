@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SeatRepository } from '../repository/seat.repository';
 import { getDataSource } from '../../config/typeorm-factory';
-import { NotFoundError } from '../../error';
+import { CannotReserveError, NotFoundError } from '../../error';
 import { EntityManager } from 'typeorm';
 import { ConcertScheduleRepository } from '../repository/concert-schedule.repository';
 import { AvailableSeatsResponseDTO } from '../controller/concert.dto';
@@ -15,26 +15,55 @@ export class ConcertService {
     private readonly logger: MyCustomLogger,
   ) {}
 
-  async reserve({ seatId, userId }: { seatId: number; userId: number }) {
+  async reserveWithPessimisticLock({
+    seatId,
+    userId,
+  }: {
+    seatId: number;
+    userId: number;
+  }) {
     const nowDate = new Date();
-    this.logger.log('reserve', 'reserve start', { nowDate });
 
     return await getDataSource().transaction(async (mgr) => {
       const seat = await this.seatRepository
         .findOne(mgr)
         .idWithPessimisticLock({ id: seatId });
       if (!seat) throw new NotFoundError('seat not found');
-      this.logger.log('reserve', 'seat info', seat.toInfo());
 
       seat.validateReservation();
       seat.reserve({ userId, nowDate });
 
-      this.logger.log('reserve', 'after seat reserved', seat.toInfo());
-
       const saved = await this.seatRepository.save({ domain: seat, mgr });
 
-      this.logger.log('reserve', 'saved seat info', seat.toInfo());
       return saved.toResponse();
+    });
+  }
+
+  async reserveWithOptimisticLock({
+    seatId,
+    userId,
+  }: {
+    seatId: number;
+    userId: number;
+  }) {
+    const nowDate = new Date();
+
+    return await getDataSource().transaction(async (mgr) => {
+      const seat = await this.seatRepository.findOne(mgr).id({ id: seatId });
+      if (!seat) throw new NotFoundError('Seat not found');
+
+      seat.validateReservation();
+      seat.reserve({ userId, nowDate });
+
+      try {
+        const saved = await this.seatRepository.saveWithVersion({
+          domain: seat,
+          mgr,
+        });
+        return saved.toResponse();
+      } catch (err) {
+        throw new CannotReserveError('cannot reservation.');
+      }
     });
   }
 
