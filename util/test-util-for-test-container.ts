@@ -1,19 +1,28 @@
-// test-utils.ts
-import { TestingModule, Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
+import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 import { getAllEntities, setDataSource } from '../src/config/typeorm-factory';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { ConfigModule } from '../src/config/config.module';
+import { RedisConfig } from '../src/config/config.redis';
+import { RedisSpinLockModule } from '../src/redis';
 
-export async function initializeTestModule(moduleClass: any): Promise<{
+export async function initializeTestModule(...moduleClasses: any[]): Promise<{
   module: TestingModule;
   dataSource: DataSource;
   mysqlContainer: StartedMySqlContainer;
+  redisContainer: StartedRedisContainer;
 }> {
   const mysqlContainer = await new MySqlContainer('mysql')
     .withDatabase('test_db')
     .withUsername('test_user')
     .withUserPassword('test_password')
+    .start();
+
+  const redisContainer = await new RedisContainer()
+    .withExposedPorts(6379)
     .start();
 
   const module = await Test.createTestingModule({
@@ -30,12 +39,24 @@ export async function initializeTestModule(moduleClass: any): Promise<{
         logging: false,
       }),
       TypeOrmModule.forFeature(getAllEntities()),
-      moduleClass,
+      RedisModule.forRootAsync({
+        imports: [ConfigModule],
+        inject: [RedisConfig],
+        useFactory: async () => ({
+          type: 'single',
+          options: {
+            host: redisContainer.getHost(),
+            port: redisContainer.getMappedPort(6379),
+          },
+        }),
+      }),
+      RedisSpinLockModule,
+      ...moduleClasses,
     ],
   }).compile();
 
   const dataSource = module.get<DataSource>(DataSource);
   setDataSource(dataSource);
 
-  return { module, dataSource, mysqlContainer };
+  return { module, dataSource, mysqlContainer, redisContainer };
 }
