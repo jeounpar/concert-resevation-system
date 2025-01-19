@@ -7,13 +7,14 @@ import { CannotReserveError } from '../../error';
 import { ConcertModule } from '../concert.module';
 import { initializeTestModule } from '../../../util/test-util-for-test-container';
 
-describe('ConcertService 동시성 테스트', () => {
+describe('ConcertService Lock Test', () => {
   jest.setTimeout(50000);
   let module: TestingModule;
   let concertService: ConcertService;
   let dataSource: DataSource;
   let mysqlContainer: StartedMySqlContainer;
-  const userIds = Array.from({ length: 10 }, (_, i) => i + 1);
+  const totalUser = 10000;
+  const userIds = Array.from({ length: totalUser }, (_, i) => i + 1);
 
   beforeAll(async () => {
     const result = await initializeTestModule(ConcertModule);
@@ -43,7 +44,7 @@ describe('ConcertService 동시성 테스트', () => {
     await mysqlContainer.stop();
   });
 
-  describe('10명의 유저가 동시에 같은 좌석을 예약할 때 1명만 성공해야 한다.', () => {
+  describe(`${totalUser}명의 유저가 동시에 같은 좌석을 예약할 때 1명만 성공해야 한다.`, () => {
     it('비관적락 (Pessimistic Lock)', async () => {
       const reservationPromises = userIds.map(async (userId) => {
         try {
@@ -66,7 +67,7 @@ describe('ConcertService 동시성 테스트', () => {
       );
 
       expect(successfulReservations.length).toBe(1);
-      expect(failedReservations.length).toBe(9);
+      expect(failedReservations.length).toBe(totalUser - 1);
       failedReservations.forEach((error) => {
         expect(error).toBeInstanceOf(CannotReserveError);
       });
@@ -100,7 +101,7 @@ describe('ConcertService 동시성 테스트', () => {
       );
 
       expect(successfulReservations.length).toBe(1);
-      expect(failedReservations.length).toBe(9);
+      expect(failedReservations.length).toBe(totalUser - 1);
 
       failedReservations.forEach((error) => {
         expect(error).toBeInstanceOf(CannotReserveError);
