@@ -13,6 +13,11 @@ import {
 import * as dayjs from 'dayjs';
 import { CONCERT_POLICY } from '../../policy';
 import { ConcertModule } from '../concert.module';
+import { RedisSpinLockModule } from '../../redis';
+import { initializeTestModule } from '../../../util/test-util-for-test-container';
+import { PointModule } from '../../point/point.module';
+import { PaymentModule } from '../../payment/payment.module';
+import { StartedRedisContainer } from '@testcontainers/redis';
 
 describe('ConcertService ', () => {
   jest.setTimeout(50000);
@@ -20,6 +25,7 @@ describe('ConcertService ', () => {
   let concertService: ConcertService;
   let dataSource: DataSource;
   let mysqlContainer: StartedMySqlContainer;
+  let redisContainer: StartedRedisContainer;
 
   beforeAll(async () => {
     mysqlContainer = await new MySqlContainer('mysql')
@@ -28,23 +34,20 @@ describe('ConcertService ', () => {
       .withUserPassword('test_password')
       .start();
 
-    module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'mysql',
-          host: mysqlContainer.getHost(),
-          port: mysqlContainer.getPort(),
-          username: mysqlContainer.getUsername(),
-          password: mysqlContainer.getUserPassword(),
-          database: mysqlContainer.getDatabase(),
-          entities: getAllEntities(),
-          synchronize: true,
-          logging: false,
-        }),
-        TypeOrmModule.forFeature(getAllEntities()),
-        ConcertModule,
-      ],
-    }).compile();
+    mysqlContainer = await new MySqlContainer('mysql')
+      .withDatabase('test_db')
+      .withUsername('test_user')
+      .withUserPassword('test_password')
+      .start();
+
+    const result = await initializeTestModule(
+      ConcertModule,
+      RedisSpinLockModule,
+    );
+    module = result.module;
+    dataSource = result.dataSource;
+    mysqlContainer = result.mysqlContainer;
+    redisContainer = result.redisContainer;
 
     concertService = module.get<ConcertService>(ConcertService);
     dataSource = module.get<DataSource>(DataSource);
@@ -59,6 +62,7 @@ describe('ConcertService ', () => {
   afterAll(async () => {
     await module.close();
     await mysqlContainer.stop();
+    await redisContainer.stop();
   });
 
   describe('좌석 예약 ', () => {

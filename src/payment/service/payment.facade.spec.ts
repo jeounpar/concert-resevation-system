@@ -1,16 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { PaymentFacade } from './payment.facade';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
 import { getAllEntities, setDataSource } from '../../config/typeorm-factory';
 import { PointEntity, SeatEntity, TokenEntity } from '../../entity';
 import { CannotPaidError, NotFoundError, PointNotEnough } from '../../error';
 import { ConcertModule } from '../../concert/concert.module';
-import { PointModule } from '../../point/point.module';
-import { PaymentModule } from '../payment.module';
 import * as dayjs from 'dayjs';
 import { CONCERT_POLICY } from '../../policy';
+import { initializeTestModule } from '../../../util/test-util-for-test-container';
+import { StartedRedisContainer } from '@testcontainers/redis';
+import { PointModule } from '../../point/point.module';
+import { PaymentModule } from '../payment.module';
+import { RedisSpinLockModule } from '../../redis';
 
 describe('PaymentFacade', () => {
   jest.setTimeout(50000);
@@ -18,6 +20,7 @@ describe('PaymentFacade', () => {
   let paymentFacade: PaymentFacade;
   let dataSource: DataSource;
   let mysqlContainer: StartedMySqlContainer;
+  let redisContainer: StartedRedisContainer;
   let ormSeatRepository: Repository<SeatEntity>;
   let ormPointRepository: Repository<PointEntity>;
   let ormTokenRepository: Repository<TokenEntity>;
@@ -29,25 +32,16 @@ describe('PaymentFacade', () => {
       .withUserPassword('test_password')
       .start();
 
-    module = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'mysql',
-          host: mysqlContainer.getHost(),
-          port: mysqlContainer.getPort(),
-          username: mysqlContainer.getUsername(),
-          password: mysqlContainer.getUserPassword(),
-          database: mysqlContainer.getDatabase(),
-          entities: getAllEntities(),
-          synchronize: true,
-          logging: false,
-        }),
-        TypeOrmModule.forFeature(getAllEntities()),
-        ConcertModule,
-        PointModule,
-        PaymentModule,
-      ],
-    }).compile();
+    const result = await initializeTestModule(
+      ConcertModule,
+      PointModule,
+      PaymentModule,
+      RedisSpinLockModule,
+    );
+    module = result.module;
+    dataSource = result.dataSource;
+    mysqlContainer = result.mysqlContainer;
+    redisContainer = result.redisContainer;
 
     paymentFacade = module.get<PaymentFacade>(PaymentFacade);
     dataSource = module.get<DataSource>(DataSource);
@@ -67,6 +61,7 @@ describe('PaymentFacade', () => {
   afterAll(async () => {
     await module.close();
     await mysqlContainer.stop();
+    await redisContainer.stop();
   });
 
   it('좌석을 결제하고 포인트를 사용한다.', async () => {
