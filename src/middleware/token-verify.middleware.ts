@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { TokenNotFound } from '../error';
-import { TokenService } from '../token/service/token.service';
+import { TokenService } from '../api/token/service/token.service';
 
 @Injectable()
 export class TokenVerifyMiddleware implements NestMiddleware {
