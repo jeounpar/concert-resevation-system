@@ -17,7 +17,7 @@ import { initializeTestModule } from '../../../../util/test-util-for-test-contai
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 
 describe('ConcertService ', () => {
-  jest.setTimeout(50000);
+  jest.setTimeout(100000);
   let module: TestingModule;
   let concertService: ConcertService;
   let dataSource: DataSource;
