@@ -13,12 +13,12 @@ import {
   dataSourceFactory,
   dataSourceOptionsFactory,
 } from './config/typeorm-factory';
-import { TokenModule } from './token/token.module';
-import { ConcertModule } from './concert/concert.module';
-import { PointModule } from './point/point.module';
+import { TokenModule } from './api/token/token.module';
+import { ConcertModule } from './api/concert/concert.module';
+import { PointModule } from './api/point/point.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TokenVerifyMiddleware } from './middleware/token-verify.middleware';
-import { PaymentModule } from './payment/payment.module';
+import { PaymentModule } from './api/payment/payment.module';
 import { LogModule } from './log/log.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './interceptor/my-logging.interceptor';
