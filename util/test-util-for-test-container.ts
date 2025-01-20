@@ -15,7 +15,7 @@ export async function initializeTestModule(...moduleClasses: any[]): Promise<{
   mysqlContainer: StartedMySqlContainer;
   redisContainer: StartedRedisContainer;
 }> {
-  const mysqlContainer = await new MySqlContainer('mysql')
+  const mysqlContainer = await new MySqlContainer()
     .withDatabase('test_db')
     .withUsername('test_user')
     .withUserPassword('test_password')

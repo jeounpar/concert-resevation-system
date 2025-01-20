@@ -13,11 +13,14 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
+    "test": "jest --forceExit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config test/jest-e2e.json"
+    "test:e2e": "jest --config test/jest-e2e.json --forceExit",
+    "test:pessimistic": "jest /src/api/concert/service/concert.service-pessimistic.spec.ts --forceExit",
+    "test:optimistic": "jest /src/api/concert/service/concert.service-optimistic.spec.ts --forceExit",
+    "test:redis-lock": "jest /src/api/concert/service/concert.service-redis-lock.spec.ts --forceExit"
   },
   "dependencies": {
     "@nestjs-modules/ioredis": "^2.0.2",

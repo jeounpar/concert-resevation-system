@@ -3,12 +3,11 @@ import { ConcertService } from './concert.service';
 import { DataSource } from 'typeorm';
 import { StartedMySqlContainer } from '@testcontainers/mysql';
 import { SeatEntity } from '../../../entity';
-import { CannotReserveError } from '../../../error';
 import { ConcertModule } from '../concert.module';
 import { initializeTestModule } from '../../../../util/test-util-for-test-container';
 import { StartedRedisContainer } from '@testcontainers/redis';
 
-describe('ConcertService Lock Test', () => {
+describe('ConcertService Redis Test', () => {
   jest.setTimeout(50000);
   let module: TestingModule;
   let concertService: ConcertService;
@@ -49,75 +48,6 @@ describe('ConcertService Lock Test', () => {
   });
 
   describe(`${totalUser}명의 유저가 동시에 같은 좌석을 예약할 때 1명만 성공해야 한다.`, () => {
-    it('비관적락 (Pessimistic Lock)', async () => {
-      const reservationPromises = userIds.map(async (userId) => {
-        try {
-          return await concertService.reserveWithPessimisticLock({
-            seatId: 1,
-            userId,
-          });
-        } catch (error) {
-          return error;
-        }
-      });
-
-      const results = await Promise.all(reservationPromises);
-
-      const successfulReservations = results.filter(
-        (result) => !(result instanceof Error),
-      );
-      const failedReservations = results.filter(
-        (result) => result instanceof Error,
-      );
-
-      expect(successfulReservations.length).toBe(1);
-      expect(failedReservations.length).toBe(totalUser - 1);
-      failedReservations.forEach((error) => {
-        expect(error).toBeInstanceOf(CannotReserveError);
-      });
-
-      const reservedSeat = await dataSource.getRepository(SeatEntity).findOne({
-        where: { id: 1 },
-      });
-      expect(reservedSeat.userId).toBe(successfulReservations[0].userId);
-      expect(reservedSeat.status).toBe('RESERVED');
-    });
-
-    it('낙관적락 (Optimistic Lock)', async () => {
-      const reservationPromises = userIds.map(async (userId) => {
-        try {
-          return await concertService.reserveWithOptimisticLock({
-            seatId: 1,
-            userId,
-          });
-        } catch (error) {
-          return error;
-        }
-      });
-
-      const results = await Promise.all(reservationPromises);
-
-      const successfulReservations = results.filter(
-        (result) => !(result instanceof Error),
-      );
-      const failedReservations = results.filter(
-        (result) => result instanceof Error,
-      );
-
-      expect(successfulReservations.length).toBe(1);
-      expect(failedReservations.length).toBe(totalUser - 1);
-
-      failedReservations.forEach((error) => {
-        expect(error).toBeInstanceOf(CannotReserveError);
-      });
-
-      const reservedSeat = await dataSource.getRepository(SeatEntity).findOne({
-        where: { id: 1 },
-      });
-      expect(reservedSeat.userId).toBe(successfulReservations[0].userId);
-      expect(reservedSeat.status).toBe('RESERVED');
-    });
-
     it('Redis Spin Lock', async () => {
       const reservationPromises = userIds.map(async (userId) => {
         try {

@@ -1,8 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { ConcertService } from './concert.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { getAllEntities, setDataSource } from '../../../config/typeorm-factory';
+import { setDataSource } from '../../../config/typeorm-factory';
 import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
 import { SeatEntity } from '../../../entity';
 import {
@@ -15,9 +14,7 @@ import { CONCERT_POLICY } from '../../../policy';
 import { ConcertModule } from '../concert.module';
 import { RedisSpinLockModule } from '../../../redis';
 import { initializeTestModule } from '../../../../util/test-util-for-test-container';
-import { PointModule } from '../../point/point.module';
-import { PaymentModule } from '../../payment/payment.module';
-import { StartedRedisContainer } from '@testcontainers/redis';
+import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 
 describe('ConcertService ', () => {
   jest.setTimeout(50000);
@@ -34,11 +31,7 @@ describe('ConcertService ', () => {
       .withUserPassword('test_password')
       .start();
 
-    mysqlContainer = await new MySqlContainer('mysql')
-      .withDatabase('test_db')
-      .withUsername('test_user')
-      .withUserPassword('test_password')
-      .start();
+    redisContainer = await new RedisContainer().withExposedPorts(6379).start();
 
     const result = await initializeTestModule(
       ConcertModule,
