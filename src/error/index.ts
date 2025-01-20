@@ -39,3 +39,9 @@ export class CannotPaidError extends BaseBusinessError {
     super({ errorCode: 'CANNOT_PAID_ERROR', message });
   }
 }
+
+export class LockAcquiredFailed extends BaseBusinessError {
+  public constructor(message: string) {
+    super({ errorCode: 'LOCK_ACQUIRED_FAILED', message });
+  }
+}
