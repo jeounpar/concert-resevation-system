@@ -25,12 +25,18 @@ import { LoggingInterceptor } from '../src/interceptor/my-logging.interceptor';
 import { GenerateRequestIdMiddleware } from '../src/middleware/generate-request-id.middleware';
 import { TokenVerifyMiddleware } from '../src/middleware/token-verify.middleware';
 import { TOKEN_POLICY } from '../src/policy';
+import { RedisSpinLockModule } from '../src/redis';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { ConfigModule } from '../src/config/config.module';
+import { RedisConfig } from '../src/config/config.redis';
+import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 
 describe('Concert (e2e)', () => {
   jest.setTimeout(50000);
   let app: INestApplication;
   let tokenService: TokenService;
   let mysqlContainer: StartedMySqlContainer;
+  let redisContainer: StartedRedisContainer;
   let dataSource: DataSource;
   let seatEntity: SeatEntity;
 
@@ -40,6 +46,8 @@ describe('Concert (e2e)', () => {
       .withUsername('test_user')
       .withUserPassword('test_password')
       .start();
+
+    redisContainer = await new RedisContainer().withExposedPorts(6379).start();
 
     @Module({
       imports: [
@@ -55,11 +63,23 @@ describe('Concert (e2e)', () => {
           synchronize: true,
           logging: false,
         }),
+        RedisModule.forRootAsync({
+          imports: [ConfigModule],
+          inject: [RedisConfig],
+          useFactory: async () => ({
+            type: 'single',
+            options: {
+              host: redisContainer.getHost(),
+              port: redisContainer.getMappedPort(6379),
+            },
+          }),
+        }),
         TokenModule,
         ConcertModule,
         PointModule,
         PaymentModule,
         LogModule,
+        RedisSpinLockModule,
       ],
       controllers: [AppController],
       providers: [
@@ -217,7 +237,7 @@ describe('Concert (e2e)', () => {
       totalUserCount - TOKEN_POLICY.MAX_ACTIVE_TOKEN_COUNT,
     );
 
-    // 6. 100명의 유저가 하나의 좌석에 대해 예약 요청 -> 1명만 성공하고 999명은 실패
+    // 6. 100명의 유저가 하나의 좌석에 대해 예약 요청 -> 1명만 성공하고 99명은 실패
     const seatId = 1;
     const reservationResults = await Promise.all(
       tokenIssueResponse.map(async ({ userId, tokenValue }) => {
