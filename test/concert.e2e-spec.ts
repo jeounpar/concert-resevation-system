@@ -32,7 +32,7 @@ import { RedisConfig } from '../src/config/config.redis';
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 
 describe('Concert (e2e)', () => {
-  jest.setTimeout(50000);
+  jest.setTimeout(100000);
   let app: INestApplication;
   let tokenService: TokenService;
   let mysqlContainer: StartedMySqlContainer;

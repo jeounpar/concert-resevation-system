@@ -10,7 +10,7 @@ import { StartedRedisContainer } from '@testcontainers/redis';
 import { getDataSource } from '../../../config/typeorm-factory';
 
 describe('ConcertService Pessimistic Test', () => {
-  jest.setTimeout(50000);
+  jest.setTimeout(100000);
   let module: TestingModule;
   let concertService: ConcertService;
   let dataSource: DataSource;

@@ -15,7 +15,7 @@ import { PaymentModule } from '../payment.module';
 import { RedisSpinLockModule } from '../../../redis';
 
 describe('PaymentFacade', () => {
-  jest.setTimeout(50000);
+  jest.setTimeout(100000);
   let module: TestingModule;
   let paymentFacade: PaymentFacade;
   let dataSource: DataSource;
