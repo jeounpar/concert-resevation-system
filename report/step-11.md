@@ -1,7 +1,7 @@
 ## 동시성 테스트 보고서
 
 ### 테스트 환경
-```json
+```text
 Apple M1 Pro 16GB 15.0.1(24A348)
 ```
 
@@ -13,13 +13,13 @@ Apple M1 Pro 16GB 15.0.1(24A348)
 레디스락 테스트코드 : [concert.service-redis-lock.spec.ts](../src/api/concert/service/concert.service-redis-lock.spec.ts)
 
 ### 테스트 시나리오
-```json
+```text
 10,000명의 유저가 동시에 같은 좌석을 예약 시도
 ===> 1명만 성공해야 한다.
 ```
 
 ### 테스트 방법
-```json
+```text
 npm run test:optimistic &
 psrecord $(pgrep -f "npm run test:optimistic") --interval 0.01 --plot test_optimistic_usage.png
 
@@ -33,7 +33,7 @@ psrecord $(pgrep -f "npm run test:redis-lock") --interval 0.01 --plot test_redis
 ### 테스트 결과
 
 #### 낙관적락 (Optimistic Lock)
-```json
+```text
 테스트시간 : 3812ms
 
 최대 CPU 사용량 : 약 230%
@@ -45,7 +45,7 @@ psrecord $(pgrep -f "npm run test:redis-lock") --interval 0.01 --plot test_redis
 ![test_optimistic_usage.png](../img/test/test_optimistic_usage.png)
 
 #### 비관적락 (Pessimistic Lock)
-```json
+```text
 테스트시간 : 7698ms
         
 최대 CPU 사용량 : 약 180%
@@ -57,7 +57,7 @@ psrecord $(pgrep -f "npm run test:redis-lock") --interval 0.01 --plot test_redis
 ![test_pessimistic_usage.png](../img/test/test_pessimistic_usage.png)
 
 #### 레디스락 (Redis Lock)
-```json
+```text
 테스트시간 : 1440ms
         
 최대 CPU 사용량 : 약 170%
