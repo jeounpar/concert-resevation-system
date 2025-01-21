@@ -40,8 +40,6 @@ export async function initializeTestModule(...moduleClasses: any[]): Promise<{
       }),
       TypeOrmModule.forFeature(getAllEntities()),
       RedisModule.forRootAsync({
-        imports: [ConfigModule],
-        inject: [RedisConfig],
         useFactory: async () => ({
           type: 'single',
           options: {
