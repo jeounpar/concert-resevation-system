@@ -51,7 +51,9 @@ export class ConcertService {
     const nowDate = new Date();
 
     return await getDataSource().transaction(async (mgr) => {
-      const seat = await this.seatRepository.findOne(mgr).id({ id: seatId });
+      const seat = await this.seatRepository
+        .findOne(mgr)
+        .idWithStatus({ id: seatId, status: 'EMPTY' });
       if (!seat) throw new NotFoundError('Seat not found');
 
       seat.validateReservation();

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SeatEntity } from '../../../entity';
+import { SeatEntity, SeatStatus } from '../../../entity';
 import { EntityManager, Repository } from 'typeorm';
 import { SeatDomain } from '../domain/seat.domain';
 
@@ -74,6 +74,15 @@ export class SeatRepository {
         const entity = await repo.findOne({
           where: { id },
           lock: { mode: 'pessimistic_write' },
+        });
+
+        return entity ? SeatDomain.fromEntity(entity) : null;
+      },
+      async idWithStatus({ id, status }: { id: number; status: SeatStatus }) {
+        if (!mgr) throw new Error('EntityManager does not exist');
+
+        const entity = await repo.findOne({
+          where: { id, status },
         });
 
         return entity ? SeatDomain.fromEntity(entity) : null;
