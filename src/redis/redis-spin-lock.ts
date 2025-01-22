@@ -26,7 +26,7 @@ export class RedisSpinLock {
 }
 
 export function SpinLockWithTransaction(
-  lockKey: string,
+  baseLockKeyName: string,
   ttl: number = 5000,
   maxRetries: number = 10,
   retryDelay: number = 100,
@@ -40,6 +40,10 @@ export function SpinLockWithTransaction(
 
     descriptor.value = async function (...args: any[]) {
       const redisSpinLock: RedisSpinLock = this.redisSpinLock;
+
+      const { seatId } = args[0];
+      const lockKey = `${baseLockKeyName}:${seatId}`;
+
       let lockAcquired = false;
       let retries = 0;
 

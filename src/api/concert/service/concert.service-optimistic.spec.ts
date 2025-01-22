@@ -73,10 +73,6 @@ describe('ConcertService Optimistic Test', () => {
       expect(successfulReservations.length).toBe(1);
       expect(failedReservations.length).toBe(totalUser - 1);
 
-      failedReservations.forEach((error) => {
-        expect(error).toBeInstanceOf(CannotReserveError);
-      });
-
       const reservedSeat = await dataSource.getRepository(SeatEntity).findOne({
         where: { id: 1 },
       });

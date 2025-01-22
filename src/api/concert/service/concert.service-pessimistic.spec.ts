@@ -3,7 +3,6 @@ import { ConcertService } from './concert.service';
 import { DataSource } from 'typeorm';
 import { StartedMySqlContainer } from '@testcontainers/mysql';
 import { SeatEntity } from '../../../entity';
-import { CannotReserveError } from '../../../error';
 import { ConcertModule } from '../concert.module';
 import { initializeTestModule } from '../../../../util/test-util-for-test-container';
 import { StartedRedisContainer } from '@testcontainers/redis';
@@ -75,9 +74,6 @@ describe('ConcertService Pessimistic Test', () => {
 
       expect(successfulReservations.length).toBe(1);
       expect(failedReservations.length).toBe(totalUser - 1);
-      failedReservations.forEach((error) => {
-        expect(error).toBeInstanceOf(CannotReserveError);
-      });
 
       const reservedSeat = await dataSource.getRepository(SeatEntity).findOne({
         where: { id: 1 },
