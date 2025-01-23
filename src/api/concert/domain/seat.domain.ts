@@ -73,6 +73,7 @@ export class SeatDomain {
         concertScheduleId: this.#concertScheduleId,
         userId: this.#userId,
         seatNumber: this.#seatNumber,
+        expireDate: this.#expireDate,
         status: this.#status,
         price: this.#price,
       },
