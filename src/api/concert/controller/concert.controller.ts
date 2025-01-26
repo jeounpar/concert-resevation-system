@@ -30,7 +30,7 @@ export class ConcertController {
   })
   public async reserve(@Body() body: ReserveConcertDTO) {
     const { seatId, userId } = body;
-    return this.concertService.reserveWithPessimisticLock({ seatId, userId });
+    return this.concertService.reserveWithRedisLock({ seatId, userId });
   }
 
   @Get('/:concertId/available-times')
