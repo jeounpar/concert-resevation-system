@@ -26,7 +26,7 @@ import { GenerateRequestIdMiddleware } from './middleware/generate-request-id.mi
 import { RedisConfig } from './config/config.redis';
 import { redisOptionsFactory } from './config/redis-factory';
 import { RedisModule } from '@nestjs-modules/ioredis';
-import { RedisSpinLockModule } from './redis';
+import { MyRedisModule } from './redis';
 
 @Module({
   imports: [
@@ -48,7 +48,7 @@ import { RedisSpinLockModule } from './redis';
     PointModule,
     PaymentModule,
     LogModule,
-    RedisSpinLockModule,
+    MyRedisModule,
   ],
   controllers: [AppController],
   providers: [

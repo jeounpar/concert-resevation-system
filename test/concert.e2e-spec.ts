@@ -25,7 +25,7 @@ import { LoggingInterceptor } from '../src/interceptor/my-logging.interceptor';
 import { GenerateRequestIdMiddleware } from '../src/middleware/generate-request-id.middleware';
 import { TokenVerifyMiddleware } from '../src/middleware/token-verify.middleware';
 import { TOKEN_POLICY } from '../src/policy';
-import { RedisSpinLockModule } from '../src/redis';
+import { MyRedisModule } from '../src/redis';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { ConfigModule } from '../src/config/config.module';
 import { RedisConfig } from '../src/config/config.redis';
@@ -79,7 +79,7 @@ describe('Concert (e2e)', () => {
         PointModule,
         PaymentModule,
         LogModule,
-        RedisSpinLockModule,
+        RedisModule,
       ],
       controllers: [AppController],
       providers: [

@@ -6,4 +6,4 @@ import { RedisSpinLock } from './redis-spin-lock';
   providers: [RedisSpinLock],
   exports: [RedisSpinLock],
 })
-export class RedisSpinLockModule {}
+export class MyRedisModule {}
