@@ -4,9 +4,18 @@ import { getDataSource } from '../../../config/typeorm-factory';
 import { CannotReserveError, NotFoundError } from '../../../error';
 import { EntityManager } from 'typeorm';
 import { ConcertScheduleRepository } from '../repository/concert-schedule.repository';
-import { AvailableSeatsResponseDTO } from '../controller/concert.dto';
+import {
+  AvailableSeatsResponseDTO,
+  AvailableTimesResponseDTO,
+} from '../controller/concert.dto';
 import { MyCustomLogger } from '../../../log/my-custom-logger';
-import { RedisSpinLock, SpinLockWithTransaction } from '../../../redis';
+import {
+  getCacheKey,
+  RedisCache,
+  RedisSpinLock,
+  SpinLockWithTransaction,
+} from '../../../redis';
+import { isNil } from '@nestjs/common/utils/shared.utils';
 
 @Injectable()
 export class ConcertService {
@@ -14,6 +23,7 @@ export class ConcertService {
     private readonly redisSpinLock: RedisSpinLock,
     private readonly concertScheduleRepository: ConcertScheduleRepository,
     private readonly seatRepository: SeatRepository,
+    private readonly redisCache: RedisCache,
     private readonly logger: MyCustomLogger,
   ) {}
 
@@ -141,13 +151,23 @@ export class ConcertService {
 
   // 예약 가능 날짜
   async getAvailableTimes({ concertId }: { concertId: number }) {
+    const cachedData = await this.redisCache.get<AvailableTimesResponseDTO>(
+      getCacheKey('AVAILABLE_TIMES', concertId),
+    );
+    if (!isNil(cachedData)) return cachedData;
+
     const concertSchedules = await this.concertScheduleRepository
       .findMany()
       .concertId({ concertId });
 
     if (concertSchedules.length === 0) return [];
 
-    return concertSchedules.map((e) => e.toResponse());
+    const result = concertSchedules.map((e) => e.toResponse());
+    await this.redisCache.set(
+      getCacheKey('AVAILABLE_TIMES', concertId),
+      result,
+    );
+    return result;
   }
 
   // 예약 가능 좌석
