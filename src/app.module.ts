@@ -27,6 +27,7 @@ import { RedisConfig } from './config/config.redis';
 import { redisOptionsFactory } from './config/redis-factory';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { MyRedisModule } from './redis';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { MyRedisModule } from './redis';
       useFactory: redisOptionsFactory,
     }),
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     TokenModule,
     ConcertModule,
     PointModule,
