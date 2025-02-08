@@ -12,7 +12,7 @@ import {
 import * as dayjs from 'dayjs';
 import { CONCERT_POLICY } from '../../../policy';
 import { ConcertModule } from '../concert.module';
-import { RedisSpinLockModule } from '../../../redis';
+import { MyRedisModule } from '../../../redis';
 import { initializeTestModule } from '../../../../util/test-util-for-test-container';
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 
@@ -33,10 +33,7 @@ describe('ConcertService ', () => {
 
     redisContainer = await new RedisContainer().withExposedPorts(6379).start();
 
-    const result = await initializeTestModule(
-      ConcertModule,
-      RedisSpinLockModule,
-    );
+    const result = await initializeTestModule(ConcertModule, MyRedisModule);
     module = result.module;
     dataSource = result.dataSource;
     mysqlContainer = result.mysqlContainer;

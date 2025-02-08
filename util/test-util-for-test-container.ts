@@ -5,9 +5,7 @@ import { MySqlContainer, StartedMySqlContainer } from '@testcontainers/mysql';
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 import { getAllEntities, setDataSource } from '../src/config/typeorm-factory';
 import { RedisModule } from '@nestjs-modules/ioredis';
-import { ConfigModule } from '../src/config/config.module';
-import { RedisConfig } from '../src/config/config.redis';
-import { RedisSpinLockModule } from '../src/redis';
+import { MyRedisModule } from '../src/redis';
 
 export async function initializeTestModule(...moduleClasses: any[]): Promise<{
   module: TestingModule;
@@ -48,7 +46,7 @@ export async function initializeTestModule(...moduleClasses: any[]): Promise<{
           },
         }),
       }),
-      RedisSpinLockModule,
+      MyRedisModule,
       ...moduleClasses,
     ],
   }).compile();

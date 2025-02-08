@@ -12,7 +12,7 @@ import { initializeTestModule } from '../../../../util/test-util-for-test-contai
 import { StartedRedisContainer } from '@testcontainers/redis';
 import { PointModule } from '../../point/point.module';
 import { PaymentModule } from '../payment.module';
-import { RedisSpinLockModule } from '../../../redis';
+import { MyRedisModule } from '../../../redis';
 
 describe('PaymentFacade', () => {
   jest.setTimeout(100000);
@@ -36,7 +36,7 @@ describe('PaymentFacade', () => {
       ConcertModule,
       PointModule,
       PaymentModule,
-      RedisSpinLockModule,
+      MyRedisModule,
     );
     module = result.module;
     dataSource = result.dataSource;
