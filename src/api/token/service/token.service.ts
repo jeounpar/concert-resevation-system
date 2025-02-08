@@ -3,31 +3,25 @@ import { getDataSource } from '../../../config/typeorm-factory';
 import { TokenRepository } from '../repository/token.repository';
 import { TokenDomain } from '../domain/token.domain';
 import { EntityManager } from 'typeorm';
-import { TOKEN_POLICY } from '../../../policy';
 import { NotFoundError, TokenNotFound } from '../../../error';
 import { MyCustomLogger } from '../../../log/my-custom-logger';
+import { RedisTokenQueue } from '../../../redis';
 
 @Injectable()
 export class TokenService {
   constructor(
     private readonly tokenRepository: TokenRepository,
+    private readonly redisTokenQueue: RedisTokenQueue,
     private readonly logger: MyCustomLogger,
   ) {}
 
   async getCurrentOrder({ tokenValue }: { tokenValue: string }) {
-    const myToken = await this.tokenRepository
+    const token = await this.tokenRepository
       .findOne()
       .tokenValue({ tokenValue });
-    const latestToken = await this.tokenRepository.findOne().latestActiveed();
+    if (!token) throw new NotFoundError(`token=${tokenValue} not found`);
 
-    if (!myToken)
-      throw new TokenNotFound(`token with tokenValue=${tokenValue} not found`);
-
-    if (!latestToken) return 0;
-
-    const order = myToken.id() - latestToken.id();
-
-    return order > 0 ? order : 0;
+    return await this.redisTokenQueue.rank({ userId: token.userId });
   }
 
   async issue({ userId }: { userId: number }) {
@@ -43,6 +37,8 @@ export class TokenService {
         domain: TokenDomain.createWaitStatus({ userId, nowDate }),
         mgr,
       });
+
+      await this.redisTokenQueue.add({ userId, nowDate });
 
       return newToken.info();
     });
@@ -89,6 +85,7 @@ export class TokenService {
     mgr?: EntityManager;
   }) {
     await this.tokenRepository.deleteByUserId({ userId, mgr });
+    await this.redisTokenQueue.removeActiveTokenByUserId({ userId });
   }
 
   async deleteExpiredToken({
@@ -99,19 +96,13 @@ export class TokenService {
     mgr?: EntityManager;
   }) {
     await this.tokenRepository.deleteExpired({ nowDate, mgr });
+    await this.redisTokenQueue.removeExpiredActiveTokens({ nowDate });
   }
 
   async activeToken({ mgr }: { mgr?: EntityManager }) {
-    const allowedTokenCount = await this.tokenRepository.count(mgr).allow();
-    const toBeActiveedTokenCount =
-      TOKEN_POLICY.MAX_ACTIVE_TOKEN_COUNT - allowedTokenCount;
-    if (toBeActiveedTokenCount <= 0) return;
-
-    const blockedTokens = await this.tokenRepository
-      .findMany(mgr)
-      .blockedWithTake({ take: toBeActiveedTokenCount });
-    blockedTokens.forEach((e) => e.setActive());
-    await this.tokenRepository.bulkSave({ domains: blockedTokens, mgr });
+    mgr;
+    const redisUserTokens = await this.redisTokenQueue.pop();
+    await this.redisTokenQueue.active(redisUserTokens);
   }
 
   async validateToken({
@@ -121,6 +112,7 @@ export class TokenService {
     tokenValue: string;
     nowDate: Date;
   }) {
+    nowDate;
     const token = await this.tokenRepository
       .findOne()
       .tokenValue({ tokenValue });
@@ -128,6 +120,7 @@ export class TokenService {
       throw new TokenNotFound(
         `token with tokenValue=${tokenValue} is not found`,
       );
-    token.validateToken({ nowDate });
+
+    await this.redisTokenQueue.validateToken({ userId: token.userId });
   }
 }

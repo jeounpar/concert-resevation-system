@@ -1,8 +1,8 @@
 import { TokenEntity, TokenStatus } from '../../../entity';
 import { v4 as uuid } from 'uuid';
-import * as dayjs from 'dayjs';
 import { TOKEN_POLICY } from '../../../policy';
 import { TokenExpired } from '../../../error';
+import * as dayjs from 'dayjs';
 
 export class TokenDomain {
   #id: number;
@@ -85,6 +85,10 @@ export class TokenDomain {
       throw new TokenExpired(
         `token is expired at ${this.#expiredDate.toISOString()}`,
       );
+  }
+
+  get userId(): number {
+    return this.#userId;
   }
 
   id() {

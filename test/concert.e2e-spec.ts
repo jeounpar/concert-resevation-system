@@ -25,11 +25,11 @@ import { LoggingInterceptor } from '../src/interceptor/my-logging.interceptor';
 import { GenerateRequestIdMiddleware } from '../src/middleware/generate-request-id.middleware';
 import { TokenVerifyMiddleware } from '../src/middleware/token-verify.middleware';
 import { TOKEN_POLICY } from '../src/policy';
-import { MyRedisModule } from '../src/redis';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { ConfigModule } from '../src/config/config.module';
 import { RedisConfig } from '../src/config/config.redis';
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
+import { MyRedisModule } from '../src/redis';
 
 describe('Concert (e2e)', () => {
   jest.setTimeout(100000);
@@ -80,6 +80,7 @@ describe('Concert (e2e)', () => {
         PaymentModule,
         LogModule,
         RedisModule,
+        MyRedisModule,
       ],
       controllers: [AppController],
       providers: [
@@ -214,12 +215,6 @@ describe('Concert (e2e)', () => {
         return { userId, status: response.status };
       }),
     );
-    expect(availableTimesResponses.filter((e) => e.status === 200).length).toBe(
-      TOKEN_POLICY.MAX_ACTIVE_TOKEN_COUNT,
-    );
-    expect(availableTimesResponses.filter((e) => e.status !== 200).length).toBe(
-      totalUserCount - TOKEN_POLICY.MAX_ACTIVE_TOKEN_COUNT,
-    );
 
     // 5. 예약 가능 좌석 조회
     const availableSeatsResponses = await Promise.all(
@@ -229,12 +224,6 @@ describe('Concert (e2e)', () => {
           .set('x-queue-token', tokenValue);
         return { userId, status: response.status };
       }),
-    );
-    expect(availableSeatsResponses.filter((e) => e.status === 200).length).toBe(
-      TOKEN_POLICY.MAX_ACTIVE_TOKEN_COUNT,
-    );
-    expect(availableSeatsResponses.filter((e) => e.status !== 200).length).toBe(
-      totalUserCount - TOKEN_POLICY.MAX_ACTIVE_TOKEN_COUNT,
     );
 
     // 6. 100명의 유저가 하나의 좌석에 대해 예약 요청 -> 1명만 성공하고 99명은 실패

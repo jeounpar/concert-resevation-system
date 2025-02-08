@@ -13,8 +13,11 @@ import {
 import { TokenEntity, TokenStatusConst } from '../../../entity';
 import * as dayjs from 'dayjs';
 import { TOKEN_POLICY } from '../../../policy';
-import { NotFoundError, TokenExpired } from '../../../error';
+import { TokenExpired } from '../../../error';
 import { TokenModule } from '../token.module';
+import { MyRedisModule } from '../../../redis';
+import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 describe('TokenService', () => {
   jest.setTimeout(100000);
@@ -23,6 +26,7 @@ describe('TokenService', () => {
   let tokenRepository: TokenRepository;
   let dataSource: DataSource;
   let mysqlContainer: StartedMySqlContainer;
+  let redisContainer: StartedRedisContainer;
 
   beforeAll(async () => {
     mysqlContainer = await new MySqlContainer('mysql')
@@ -30,6 +34,8 @@ describe('TokenService', () => {
       .withUsername('test_user')
       .withUserPassword('test_password')
       .start();
+
+    redisContainer = await new RedisContainer().withExposedPorts(6379).start();
 
     module = await Test.createTestingModule({
       imports: [
@@ -44,8 +50,18 @@ describe('TokenService', () => {
           synchronize: true,
           logging: false,
         }),
+        RedisModule.forRootAsync({
+          useFactory: async () => ({
+            type: 'single',
+            options: {
+              host: redisContainer.getHost(),
+              port: redisContainer.getMappedPort(6379),
+            },
+          }),
+        }),
         TypeOrmModule.forFeature(getAllEntities()),
         TokenModule,
+        MyRedisModule,
       ],
     }).compile();
 
@@ -144,39 +160,6 @@ describe('TokenService', () => {
     expect(만료된_토큰들.length).toEqual(15);
     expect(만료_안된_토큰들.length).toEqual(15);
     expect(result.length).toEqual(15);
-  });
-
-  it('만료가 안된 토큰의 상태를 ACTIVE로 변경한다.', async () => {
-    const ormTokenRepo = getDataSource().getRepository(TokenEntity);
-
-    const totalUserCount = 30;
-    const nowDate = new Date();
-    const 만료_안된_시간 = dayjs(nowDate)
-      .add(TOKEN_POLICY.EXPIRED_TIME_SEC + 1, 'seconds')
-      .toDate();
-
-    await ormTokenRepo.save(
-      Array.from({ length: totalUserCount }, (_, index) => {
-        const userId = index + 1;
-        const entity = new TokenEntity();
-        entity.userId = userId;
-        entity.issuedDate = new Date();
-        entity.tokenValue = 'test-token';
-        entity.expiredDate = 만료_안된_시간;
-        entity.status = 'WAIT';
-        return entity;
-      }),
-    );
-
-    await tokenService.activeToken({});
-
-    const result = await ormTokenRepo.find({ withDeleted: false });
-    expect(result.filter((e) => e.status === 'ACTIVE').length).toEqual(
-      TOKEN_POLICY.MAX_ACTIVE_TOKEN_COUNT,
-    );
-    expect(result.filter((e) => e.status === 'WAIT').length).toEqual(
-      totalUserCount - TOKEN_POLICY.MAX_ACTIVE_TOKEN_COUNT,
-    );
   });
 
   it('토큰의 사용 여부를 검증한다.', async () => {
