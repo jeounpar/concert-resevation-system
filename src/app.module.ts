@@ -27,6 +27,7 @@ import { RedisConfig } from './config/config.redis';
 import { redisOptionsFactory } from './config/redis-factory';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { MyRedisModule } from './redis';
+import { ExternalDataPlatformModule } from './external/data-platform';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -51,6 +52,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     PaymentModule,
     LogModule,
     MyRedisModule,
+    ExternalDataPlatformModule,
   ],
   controllers: [AppController],
   providers: [
