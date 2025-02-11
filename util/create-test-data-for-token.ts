@@ -12,7 +12,7 @@ import { v4 } from 'uuid';
   const repo = dataSource.getRepository(TokenEntity);
 
   const date = new Date();
-  for (let i = 1; i <= 100000; i++) {
+  for (let i = 1; i <= 1_000_000; i++) {
     await repo.insert({
       userId: i,
       tokenValue: v4(),

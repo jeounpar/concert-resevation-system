@@ -10,7 +10,7 @@ import { getDataSource } from '../src/config/typeorm-factory';
 
   const repo = dataSource.getRepository(ConcertScheduleEntity);
 
-  for (let i = 1; i <= 100000; i++) {
+  for (let i = 1; i <= 1_000_000; i++) {
     const concertId = (i % 1000) + 1;
     await repo.insert({
       concertId: concertId,
