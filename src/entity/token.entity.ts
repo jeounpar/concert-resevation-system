@@ -2,6 +2,7 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  Index,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -20,9 +21,11 @@ export class TokenEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index('token_entity_user_id')
   @Column({ type: 'int' })
   userId: number;
 
+  @Index('token_entity_token_value')
   @Column({ type: 'varchar' })
   tokenValue: string;
 
