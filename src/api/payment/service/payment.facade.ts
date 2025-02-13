@@ -5,6 +5,8 @@ import { getDataSource } from '../../../config/typeorm-factory';
 import { EntityManager } from 'typeorm';
 import { TokenService } from '../../token/service/token.service';
 import { MyCustomLogger } from '../../../log/my-custom-logger';
+import { EventBus } from '@nestjs/cqrs';
+import { ConcertPaymentSuccessEvent } from '../concert-payment-success-event';
 
 @Injectable()
 export class PaymentFacade {
@@ -12,6 +14,7 @@ export class PaymentFacade {
     private readonly concertService: ConcertService,
     private readonly pointService: PointService,
     private readonly tokenService: TokenService,
+    private readonly eventBus: EventBus,
     private readonly logger: MyCustomLogger,
   ) {}
 
@@ -26,6 +29,7 @@ export class PaymentFacade {
         nowDate,
         mgr,
       });
+
       this.logger.log('concertPayment', 'concertResponse result', {
         concertResponse,
       });
@@ -43,6 +47,14 @@ export class PaymentFacade {
       this.logger.log('concertPayment', 'deleteTokenByUserId success', {
         userId,
       });
+
+      this.eventBus.publish(
+        new ConcertPaymentSuccessEvent({
+          userId: concertResponse.userId,
+          seatNumber: concertResponse.seatNumber,
+          price: concertResponse.price,
+        }),
+      );
 
       return {
         concertInfo: concertResponse,

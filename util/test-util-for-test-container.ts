@@ -6,6 +6,7 @@ import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 import { getAllEntities, setDataSource } from '../src/config/typeorm-factory';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { MyRedisModule } from '../src/redis';
+import { CqrsModule } from '@nestjs/cqrs';
 
 export async function initializeTestModule(...moduleClasses: any[]): Promise<{
   module: TestingModule;
@@ -46,6 +47,7 @@ export async function initializeTestModule(...moduleClasses: any[]): Promise<{
           },
         }),
       }),
+      CqrsModule.forRoot(),
       MyRedisModule,
       ...moduleClasses,
     ],

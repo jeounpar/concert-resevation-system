@@ -13,6 +13,7 @@ import { StartedRedisContainer } from '@testcontainers/redis';
 import { PointModule } from '../../point/point.module';
 import { PaymentModule } from '../payment.module';
 import { MyRedisModule } from '../../../redis';
+import { ExternalDataPlatformModule } from '../../../external/data-platform';
 
 describe('PaymentFacade', () => {
   jest.setTimeout(100000);
@@ -37,6 +38,7 @@ describe('PaymentFacade', () => {
       PointModule,
       PaymentModule,
       MyRedisModule,
+      ExternalDataPlatformModule,
     );
     module = result.module;
     dataSource = result.dataSource;

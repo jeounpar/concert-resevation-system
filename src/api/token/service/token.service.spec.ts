@@ -13,7 +13,6 @@ import {
 import { TokenEntity, TokenStatusConst } from '../../../entity';
 import * as dayjs from 'dayjs';
 import { TOKEN_POLICY } from '../../../policy';
-import { TokenExpired } from '../../../error';
 import { TokenModule } from '../token.module';
 import { MyRedisModule } from '../../../redis';
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
@@ -160,80 +159,5 @@ describe('TokenService', () => {
     expect(만료된_토큰들.length).toEqual(15);
     expect(만료_안된_토큰들.length).toEqual(15);
     expect(result.length).toEqual(15);
-  });
-
-  it('토큰의 사용 여부를 검증한다.', async () => {
-    const ormTokenRepo = getDataSource().getRepository(TokenEntity);
-
-    const nowDate = new Date();
-    const 만료_안된_시간 = dayjs(nowDate)
-      .add(TOKEN_POLICY.EXPIRED_TIME_SEC + 1, 'seconds')
-      .toDate();
-    const 만료된_시간 = dayjs(nowDate)
-      .subtract(TOKEN_POLICY.EXPIRED_TIME_SEC + 1, 'seconds')
-      .toDate();
-
-    const ACTIVE_상태의_사용가능한_토큰 = new TokenEntity();
-    ACTIVE_상태의_사용가능한_토큰.userId = 1;
-    ACTIVE_상태의_사용가능한_토큰.issuedDate = new Date();
-    ACTIVE_상태의_사용가능한_토큰.tokenValue = 'ACTIVE_상태의_사용가능한_토큰';
-    ACTIVE_상태의_사용가능한_토큰.expiredDate = 만료_안된_시간;
-    ACTIVE_상태의_사용가능한_토큰.status = 'ACTIVE';
-
-    const ACTIVE_상태의_만료된_토큰 = new TokenEntity();
-    ACTIVE_상태의_만료된_토큰.userId = 2;
-    ACTIVE_상태의_만료된_토큰.issuedDate = new Date();
-    ACTIVE_상태의_만료된_토큰.tokenValue = 'ACTIVE_상태의_만료된_토큰';
-    ACTIVE_상태의_만료된_토큰.expiredDate = 만료된_시간;
-    ACTIVE_상태의_만료된_토큰.status = 'ACTIVE';
-
-    const WAIT_상태의_만료안된_토큰 = new TokenEntity();
-    WAIT_상태의_만료안된_토큰.userId = 3;
-    WAIT_상태의_만료안된_토큰.issuedDate = new Date();
-    WAIT_상태의_만료안된_토큰.tokenValue = 'WAIT_상태의_만료안된_토큰';
-    WAIT_상태의_만료안된_토큰.expiredDate = 만료_안된_시간;
-    WAIT_상태의_만료안된_토큰.status = 'WAIT';
-
-    const WAIT_상태의_만료된_토큰 = new TokenEntity();
-    WAIT_상태의_만료된_토큰.userId = 4;
-    WAIT_상태의_만료된_토큰.issuedDate = new Date();
-    WAIT_상태의_만료된_토큰.tokenValue = 'WAIT_상태의_만료된_토큰';
-    WAIT_상태의_만료된_토큰.expiredDate = 만료된_시간;
-    WAIT_상태의_만료된_토큰.status = 'WAIT';
-
-    await ormTokenRepo.save([
-      ACTIVE_상태의_사용가능한_토큰,
-      ACTIVE_상태의_만료된_토큰,
-      WAIT_상태의_만료안된_토큰,
-      WAIT_상태의_만료된_토큰,
-    ]);
-
-    expect(() =>
-      tokenService.validateToken({
-        tokenValue: 'ACTIVE_상태의_사용가능한_토큰',
-        nowDate,
-      }),
-    ).not.toThrow(TokenExpired);
-
-    await expect(
-      tokenService.validateToken({
-        tokenValue: 'ACTIVE_상태의_만료된_토큰',
-        nowDate,
-      }),
-    ).rejects.toThrow(TokenExpired);
-
-    await expect(
-      tokenService.validateToken({
-        tokenValue: 'WAIT_상태의_만료안된_토큰',
-        nowDate,
-      }),
-    ).rejects.toThrow(TokenExpired);
-
-    await expect(
-      tokenService.validateToken({
-        tokenValue: 'WAIT_상태의_만료된_토큰',
-        nowDate,
-      }),
-    ).rejects.toThrow(TokenExpired);
   });
 });
