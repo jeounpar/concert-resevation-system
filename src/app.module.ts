@@ -27,8 +27,8 @@ import { RedisConfig } from './config/config.redis';
 import { redisOptionsFactory } from './config/redis-factory';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { MyRedisModule } from './redis';
-import { ExternalDataPlatformModule } from './external/data-platform';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ExternalDataPlatformModule } from './external';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [
@@ -45,7 +45,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       useFactory: redisOptionsFactory,
     }),
     ScheduleModule.forRoot(),
-    EventEmitterModule.forRoot(),
+    CqrsModule.forRoot(),
     TokenModule,
     ConcertModule,
     PointModule,

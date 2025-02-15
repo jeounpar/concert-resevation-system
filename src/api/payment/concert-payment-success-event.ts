@@ -1,4 +1,4 @@
-import { EventPayload, InternalTopicConst } from '../../event';
+import { IEvent } from '@nestjs/cqrs';
 
 export type ConcertPaymentSuccessType = {
   userId: number;
@@ -6,16 +6,6 @@ export type ConcertPaymentSuccessType = {
   price: number;
 };
 
-export class ConcertPaymentSuccessEvent extends EventPayload<ConcertPaymentSuccessType> {
-  constructor(private readonly eventPayload: ConcertPaymentSuccessType) {
-    super();
-  }
-
-  static topic() {
-    return InternalTopicConst.ConcertPaymentSuccessEvent;
-  }
-
-  payload() {
-    return this.eventPayload;
-  }
+export class ConcertPaymentSuccessEvent implements IEvent {
+  constructor(public readonly payload: ConcertPaymentSuccessType) {}
 }
