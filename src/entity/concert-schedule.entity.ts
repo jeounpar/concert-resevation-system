@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -13,10 +14,12 @@ import { ConcertEntity } from './concert.entity';
 import { SeatEntity } from './seat.entity';
 
 @Entity()
+@Index('concert_schedule_index', ['concertId', 'theDateString'])
 export class ConcertScheduleEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index('concert_schedule_concert_id')
   @Column({ type: 'int' })
   concertId: number;
 
