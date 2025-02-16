@@ -1,8 +1,8 @@
 import {
-  Injectable,
-  OnModuleInit,
-  OnModuleDestroy,
   Inject,
+  Injectable,
+  OnModuleDestroy,
+  OnModuleInit,
 } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { MyCustomLogger } from '../../log/my-custom-logger';
@@ -10,9 +10,8 @@ import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { ConcertPaymentSuccessEvent } from '../../api/payment/concert-payment-success-event';
 import { ClientKafka } from '@nestjs/microservices';
-import { OutboxRepository } from '../../outbox/outbox.repository';
-import { OutboxDomain } from '../../outbox/outbox.domain';
 import { getDataSource } from '../../config/typeorm-factory';
+import { OutboxService } from '../../outbox';
 
 @Injectable()
 export class ExternalDataPlatformEventHandler
@@ -22,7 +21,7 @@ export class ExternalDataPlatformEventHandler
 
   constructor(
     private readonly eventBus: EventBus,
-    private readonly outboxRepository: OutboxRepository,
+    private readonly outboxService: OutboxService,
     @Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka,
     private readonly logger: MyCustomLogger,
   ) {}
@@ -46,8 +45,10 @@ export class ExternalDataPlatformEventHandler
     this.logger.log('messageOutboxHandler', 'Handling event...', event.payload);
 
     await getDataSource().transaction(async (mgr) => {
-      const outbox = OutboxDomain.createInitOutbox({ payload: event.payload });
-      await this.outboxRepository.save({ domain: outbox, mgr });
+      await this.outboxService.createInitOutbox({
+        payload: event.payload,
+        mgr,
+      });
     });
   }
 
