@@ -12,6 +12,7 @@ import { ConcertPaymentSuccessEvent } from '../../api/payment/concert-payment-su
 import { ClientKafka } from '@nestjs/microservices';
 import { OutboxRepository } from '../../outbox/outbox.repository';
 import { OutboxDomain } from '../../outbox/outbox.domain';
+import { getDataSource } from '../../config/typeorm-factory';
 
 @Injectable()
 export class ExternalDataPlatformEventHandler
@@ -43,8 +44,11 @@ export class ExternalDataPlatformEventHandler
 
   private async messageOutboxHandler(event: ConcertPaymentSuccessEvent) {
     this.logger.log('messageOutboxHandler', 'Handling event...', event.payload);
-    const outbox = OutboxDomain.createInitOutbox({ payload: event.payload });
-    await this.outboxRepository.save({ domain: outbox });
+
+    await getDataSource().transaction(async (mgr) => {
+      const outbox = OutboxDomain.createInitOutbox({ payload: event.payload });
+      await this.outboxRepository.save({ domain: outbox, mgr });
+    });
   }
 
   private async publishConcertPaymentSuccessMessage(
