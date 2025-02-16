@@ -7,6 +7,7 @@ import { TokenService } from '../../token/service/token.service';
 import { MyCustomLogger } from '../../../log/my-custom-logger';
 import { EventBus } from '@nestjs/cqrs';
 import { ConcertPaymentSuccessEvent } from '../concert-payment-success-event';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class PaymentFacade {
@@ -53,6 +54,7 @@ export class PaymentFacade {
           userId: concertResponse.userId,
           seatNumber: concertResponse.seatNumber,
           price: concertResponse.price,
+          eventId: v4(),
         }),
       );
 

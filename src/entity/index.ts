@@ -5,3 +5,4 @@ export * from './point-log.entity';
 export * from './concert.entity';
 export * from './concert-schedule.entity';
 export * from './seat.entity';
+export * from './outbox.entity';
