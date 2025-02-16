@@ -29,6 +29,9 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { MyRedisModule } from './redis';
 import { ExternalDataPlatformModule } from './external';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { KafkaConfig } from './config/config.kafka';
+import { AppKafkaConsumer } from './app-kafka.consumer';
 
 @Module({
   imports: [
@@ -44,6 +47,25 @@ import { CqrsModule } from '@nestjs/cqrs';
       inject: [RedisConfig],
       useFactory: redisOptionsFactory,
     }),
+    ClientsModule.registerAsync([
+      {
+        name: 'KAFKA_SERVICE',
+        imports: [ConfigModule],
+        inject: [KafkaConfig],
+        useFactory: (kafkaConfig: KafkaConfig) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: kafkaConfig.clientId,
+              brokers: [kafkaConfig.broker],
+            },
+            consumer: {
+              groupId: kafkaConfig.groupId,
+            },
+          },
+        }),
+      },
+    ]),
     ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
     TokenModule,
@@ -54,7 +76,7 @@ import { CqrsModule } from '@nestjs/cqrs';
     MyRedisModule,
     ExternalDataPlatformModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AppKafkaConsumer],
   providers: [
     AppService,
     {
@@ -75,6 +97,7 @@ export class AppModule implements NestModule {
         { path: 'user/(.*)', method: RequestMethod.ALL },
         { path: 'point', method: RequestMethod.ALL },
         { path: 'point/(.*)', method: RequestMethod.ALL },
+        { path: 'publish', method: RequestMethod.ALL },
       )
       .forRoutes('*');
   }
