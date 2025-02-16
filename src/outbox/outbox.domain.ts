@@ -1,7 +1,9 @@
 import { OutboxEntity, OutboxStatus } from '../entity';
+import { ConcertPaymentSuccessPayload } from '../api/payment/concert-payment-success-event';
 
 export class OutboxDomain {
   #id: number;
+  #eventId: string;
   #payload: any;
   #status: OutboxStatus;
   #createDate: Date;
@@ -10,6 +12,7 @@ export class OutboxDomain {
     const domain = new OutboxDomain();
 
     domain.#id = entity.id;
+    domain.#eventId = entity.eventId;
     domain.#payload = entity.payload;
     domain.#status = entity.status;
     domain.#createDate = entity.createDate;
@@ -17,9 +20,14 @@ export class OutboxDomain {
     return domain;
   }
 
-  static createInitOutbox({ payload }: { payload: any }) {
+  static createInitOutbox({
+    payload,
+  }: {
+    payload: ConcertPaymentSuccessPayload;
+  }) {
     const domain = new OutboxDomain();
 
+    domain.#eventId = payload.eventId;
     domain.#payload = payload;
     domain.#status = 'INIT';
 
@@ -34,6 +42,7 @@ export class OutboxDomain {
     const entity = new OutboxEntity();
 
     entity.id = this.#id;
+    entity.eventId = this.#eventId;
     entity.payload = this.#payload;
     entity.status = this.#status;
 

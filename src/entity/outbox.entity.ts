@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -17,6 +18,9 @@ export type OutboxStatus =
 export class OutboxEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'varchar' })
+  eventId: string;
 
   @Column({ type: 'json' })
   payload: any;

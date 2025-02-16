@@ -32,6 +32,16 @@ export class OutboxRepository {
   findOne(mgr?: EntityManager) {
     const repo = this.#getRepo(mgr);
 
-    return {};
+    return {
+      async eventIdWithInitStatus(
+        eventId: string,
+      ): Promise<OutboxDomain | null> {
+        const entity = await repo.findOne({
+          where: { eventId, status: 'INIT' },
+        });
+
+        return entity ? OutboxDomain.fromEntity(entity) : null;
+      },
+    };
   }
 }
