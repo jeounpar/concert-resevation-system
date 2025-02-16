@@ -29,9 +29,9 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { MyRedisModule } from './redis';
 import { ExternalDataPlatformModule } from './external';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { KafkaConfig } from './config/config.kafka';
 import { AppKafkaConsumer } from './app-kafka.consumer';
+import { KafkaModule } from './kafka';
+import { OutboxModule } from './outbox';
 
 @Module({
   imports: [
@@ -47,25 +47,7 @@ import { AppKafkaConsumer } from './app-kafka.consumer';
       inject: [RedisConfig],
       useFactory: redisOptionsFactory,
     }),
-    ClientsModule.registerAsync([
-      {
-        name: 'KAFKA_SERVICE',
-        imports: [ConfigModule],
-        inject: [KafkaConfig],
-        useFactory: (kafkaConfig: KafkaConfig) => ({
-          transport: Transport.KAFKA,
-          options: {
-            client: {
-              clientId: kafkaConfig.clientId,
-              brokers: [kafkaConfig.broker],
-            },
-            consumer: {
-              groupId: kafkaConfig.groupId,
-            },
-          },
-        }),
-      },
-    ]),
+    KafkaModule,
     ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
     TokenModule,
@@ -75,6 +57,8 @@ import { AppKafkaConsumer } from './app-kafka.consumer';
     LogModule,
     MyRedisModule,
     ExternalDataPlatformModule,
+    KafkaModule,
+    OutboxModule,
   ],
   controllers: [AppController, AppKafkaConsumer],
   providers: [
