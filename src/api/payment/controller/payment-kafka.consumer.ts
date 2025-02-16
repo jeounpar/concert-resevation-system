@@ -2,7 +2,7 @@ import { Controller, Inject, OnModuleInit } from '@nestjs/common';
 import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
 import { ConcertPaymentSuccessPayload } from '../concert-payment-success-event';
 import { getDataSource } from '../../../config/typeorm-factory';
-import { OutboxService } from '../../../outbox/outbox.service';
+import { OutboxService } from '../../../outbox';
 
 @Controller()
 export class PaymentKafkaConsumer implements OnModuleInit {

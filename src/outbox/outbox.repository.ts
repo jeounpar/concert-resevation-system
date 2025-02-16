@@ -23,10 +23,33 @@ export class OutboxRepository {
     return OutboxDomain.fromEntity(saved);
   }
 
+  async bulkSave({
+    domains,
+    mgr,
+  }: {
+    domains: OutboxDomain[];
+    mgr?: EntityManager;
+  }) {
+    const repo = this.#getRepo(mgr);
+
+    const saved = await repo.save(domains.map((e) => e.toEntity()));
+
+    return saved.map((e) => OutboxDomain.fromEntity(e));
+  }
+
   findMany(mgr?: EntityManager) {
     const repo = this.#getRepo(mgr);
 
-    return {};
+    return {
+      async initStatus(): Promise<OutboxDomain[]> {
+        const entites = await repo.find({
+          where: { status: 'INIT' },
+        });
+        console.log(entites);
+
+        return entites ? entites.map(OutboxDomain.fromEntity) : [];
+      },
+    };
   }
 
   findOne(mgr?: EntityManager) {

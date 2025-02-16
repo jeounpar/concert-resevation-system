@@ -48,4 +48,12 @@ export class OutboxDomain {
 
     return entity;
   }
+
+  isExpired({ nowDate }: { nowDate: Date }): boolean {
+    return this.#createDate.getTime() + 5 * 60 * 1000 < nowDate.getTime();
+  }
+
+  get payload(): any {
+    return this.#payload;
+  }
 }
