@@ -29,6 +29,9 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { MyRedisModule } from './redis';
 import { ExternalDataPlatformModule } from './external';
 import { CqrsModule } from '@nestjs/cqrs';
+import { AppKafkaConsumer } from './app-kafka.consumer';
+import { KafkaModule } from './kafka';
+import { OutboxModule } from './outbox';
 
 @Module({
   imports: [
@@ -44,6 +47,7 @@ import { CqrsModule } from '@nestjs/cqrs';
       inject: [RedisConfig],
       useFactory: redisOptionsFactory,
     }),
+    KafkaModule,
     ScheduleModule.forRoot(),
     CqrsModule.forRoot(),
     TokenModule,
@@ -53,8 +57,10 @@ import { CqrsModule } from '@nestjs/cqrs';
     LogModule,
     MyRedisModule,
     ExternalDataPlatformModule,
+    KafkaModule,
+    OutboxModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AppKafkaConsumer],
   providers: [
     AppService,
     {
@@ -75,6 +81,7 @@ export class AppModule implements NestModule {
         { path: 'user/(.*)', method: RequestMethod.ALL },
         { path: 'point', method: RequestMethod.ALL },
         { path: 'point/(.*)', method: RequestMethod.ALL },
+        { path: 'publish', method: RequestMethod.ALL },
       )
       .forRoutes('*');
   }
