@@ -1,8 +1,8 @@
 config:
   target: "http://localhost:3000"
   phases:
-    - duration: 10
-      arrivalRate: 1000
+    - duration: 1
+      arrivalRate: 10000
   defaults:
     headers:
       Content-Type: "application/json"
@@ -15,6 +15,7 @@ config:
 scenarios:
   - flow:
       - post:
-          url: "/token/issue"
+          url: "/concert/reservation"
           json:
+            seatId: 1
             userId: "{{ userId }}"
