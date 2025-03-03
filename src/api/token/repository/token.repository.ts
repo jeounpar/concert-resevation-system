@@ -15,6 +15,12 @@ export class TokenRepository {
     return mgr ? mgr.getRepository(TokenEntity) : this.repository;
   }
 
+  async insert({ domain, mgr }: { domain: TokenDomain; mgr?: EntityManager }) {
+    const repo = this.#getRepo(mgr);
+
+    await repo.insert(domain.toEntity());
+  }
+
   async save({ domain, mgr }: { domain: TokenDomain; mgr?: EntityManager }) {
     const repo = this.#getRepo(mgr);
 

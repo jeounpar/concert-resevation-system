@@ -1,0 +1,323 @@
+{
+  "aggregate": {
+    "counters": {
+      "vusers.created_by_name.0": 2000,
+      "vusers.created": 2000,
+      "http.requests": 2000,
+      "http.codes.201": 1,
+      "http.responses": 2000,
+      "http.downloaded_bytes": 285261,
+      "plugins.metrics-by-endpoint./concert/reservation.codes.201": 1,
+      "vusers.failed": 0,
+      "vusers.completed": 2000,
+      "http.codes.400": 1999,
+      "plugins.metrics-by-endpoint./concert/reservation.codes.400": 1999
+    },
+    "rates": {
+      "http.request_rate": 2000
+    },
+    "firstCounterAt": 1740482191322,
+    "firstHistogramAt": 1740482191353,
+    "lastCounterAt": 1740482193659,
+    "lastHistogramAt": 1740482193659,
+    "firstMetricAt": 1740482191322,
+    "lastMetricAt": 1740482193659,
+    "period": 1740482190000,
+    "summaries": {
+      "http.response_time": {
+        "min": 2,
+        "max": 1068,
+        "count": 2000,
+        "mean": 960.4,
+        "p50": 1022.7,
+        "median": 1022.7,
+        "p75": 1043.3,
+        "p90": 1043.3,
+        "p95": 1064.4,
+        "p99": 1064.4,
+        "p999": 1064.4
+      },
+      "http.response_time.2xx": {
+        "min": 21,
+        "max": 21,
+        "count": 1,
+        "mean": 21,
+        "p50": 21.1,
+        "median": 21.1,
+        "p75": 21.1,
+        "p90": 21.1,
+        "p95": 21.1,
+        "p99": 21.1,
+        "p999": 21.1
+      },
+      "plugins.metrics-by-endpoint.response_time./concert/reservation": {
+        "min": 2,
+        "max": 1068,
+        "count": 2000,
+        "mean": 960.4,
+        "p50": 1022.7,
+        "median": 1022.7,
+        "p75": 1043.3,
+        "p90": 1043.3,
+        "p95": 1064.4,
+        "p99": 1064.4,
+        "p999": 1064.4
+      },
+      "vusers.session_length": {
+        "min": 4.2,
+        "max": 1117.5,
+        "count": 2000,
+        "mean": 972,
+        "p50": 1043.3,
+        "median": 1043.3,
+        "p75": 1043.3,
+        "p90": 1064.4,
+        "p95": 1064.4,
+        "p99": 1085.9,
+        "p999": 1107.9
+      },
+      "http.response_time.4xx": {
+        "min": 2,
+        "max": 1068,
+        "count": 1999,
+        "mean": 960.9,
+        "p50": 1022.7,
+        "median": 1022.7,
+        "p75": 1043.3,
+        "p90": 1043.3,
+        "p95": 1064.4,
+        "p99": 1064.4,
+        "p999": 1064.4
+      }
+    },
+    "histograms": {
+      "http.response_time": {
+        "min": 2,
+        "max": 1068,
+        "count": 2000,
+        "mean": 960.4,
+        "p50": 1022.7,
+        "median": 1022.7,
+        "p75": 1043.3,
+        "p90": 1043.3,
+        "p95": 1064.4,
+        "p99": 1064.4,
+        "p999": 1064.4
+      },
+      "http.response_time.2xx": {
+        "min": 21,
+        "max": 21,
+        "count": 1,
+        "mean": 21,
+        "p50": 21.1,
+        "median": 21.1,
+        "p75": 21.1,
+        "p90": 21.1,
+        "p95": 21.1,
+        "p99": 21.1,
+        "p999": 21.1
+      },
+      "plugins.metrics-by-endpoint.response_time./concert/reservation": {
+        "min": 2,
+        "max": 1068,
+        "count": 2000,
+        "mean": 960.4,
+        "p50": 1022.7,
+        "median": 1022.7,
+        "p75": 1043.3,
+        "p90": 1043.3,
+        "p95": 1064.4,
+        "p99": 1064.4,
+        "p999": 1064.4
+      },
+      "vusers.session_length": {
+        "min": 4.2,
+        "max": 1117.5,
+        "count": 2000,
+        "mean": 972,
+        "p50": 1043.3,
+        "median": 1043.3,
+        "p75": 1043.3,
+        "p90": 1064.4,
+        "p95": 1064.4,
+        "p99": 1085.9,
+        "p999": 1107.9
+      },
+      "http.response_time.4xx": {
+        "min": 2,
+        "max": 1068,
+        "count": 1999,
+        "mean": 960.9,
+        "p50": 1022.7,
+        "median": 1022.7,
+        "p75": 1043.3,
+        "p90": 1043.3,
+        "p95": 1064.4,
+        "p99": 1064.4,
+        "p999": 1064.4
+      }
+    }
+  },
+  "intermediate": [
+    {
+      "counters": {
+        "vusers.created_by_name.0": 2000,
+        "vusers.created": 2000,
+        "http.requests": 2000,
+        "http.codes.201": 1,
+        "http.responses": 2000,
+        "http.downloaded_bytes": 285261,
+        "plugins.metrics-by-endpoint./concert/reservation.codes.201": 1,
+        "vusers.failed": 0,
+        "vusers.completed": 2000,
+        "http.codes.400": 1999,
+        "plugins.metrics-by-endpoint./concert/reservation.codes.400": 1999
+      },
+      "rates": {
+        "http.request_rate": 2000
+      },
+      "http.request_rate": null,
+      "firstCounterAt": 1740482191322,
+      "firstHistogramAt": 1740482191353,
+      "lastCounterAt": 1740482193659,
+      "lastHistogramAt": 1740482193659,
+      "firstMetricAt": 1740482191322,
+      "lastMetricAt": 1740482193659,
+      "period": "1740482190000",
+      "summaries": {
+        "http.response_time": {
+          "min": 2,
+          "max": 1068,
+          "count": 2000,
+          "mean": 960.4,
+          "p50": 1022.7,
+          "median": 1022.7,
+          "p75": 1043.3,
+          "p90": 1043.3,
+          "p95": 1064.4,
+          "p99": 1064.4,
+          "p999": 1064.4
+        },
+        "http.response_time.2xx": {
+          "min": 21,
+          "max": 21,
+          "count": 1,
+          "mean": 21,
+          "p50": 21.1,
+          "median": 21.1,
+          "p75": 21.1,
+          "p90": 21.1,
+          "p95": 21.1,
+          "p99": 21.1,
+          "p999": 21.1
+        },
+        "plugins.metrics-by-endpoint.response_time./concert/reservation": {
+          "min": 2,
+          "max": 1068,
+          "count": 2000,
+          "mean": 960.4,
+          "p50": 1022.7,
+          "median": 1022.7,
+          "p75": 1043.3,
+          "p90": 1043.3,
+          "p95": 1064.4,
+          "p99": 1064.4,
+          "p999": 1064.4
+        },
+        "vusers.session_length": {
+          "min": 4.2,
+          "max": 1117.5,
+          "count": 2000,
+          "mean": 972,
+          "p50": 1043.3,
+          "median": 1043.3,
+          "p75": 1043.3,
+          "p90": 1064.4,
+          "p95": 1064.4,
+          "p99": 1085.9,
+          "p999": 1107.9
+        },
+        "http.response_time.4xx": {
+          "min": 2,
+          "max": 1068,
+          "count": 1999,
+          "mean": 960.9,
+          "p50": 1022.7,
+          "median": 1022.7,
+          "p75": 1043.3,
+          "p90": 1043.3,
+          "p95": 1064.4,
+          "p99": 1064.4,
+          "p999": 1064.4
+        }
+      },
+      "histograms": {
+        "http.response_time": {
+          "min": 2,
+          "max": 1068,
+          "count": 2000,
+          "mean": 960.4,
+          "p50": 1022.7,
+          "median": 1022.7,
+          "p75": 1043.3,
+          "p90": 1043.3,
+          "p95": 1064.4,
+          "p99": 1064.4,
+          "p999": 1064.4
+        },
+        "http.response_time.2xx": {
+          "min": 21,
+          "max": 21,
+          "count": 1,
+          "mean": 21,
+          "p50": 21.1,
+          "median": 21.1,
+          "p75": 21.1,
+          "p90": 21.1,
+          "p95": 21.1,
+          "p99": 21.1,
+          "p999": 21.1
+        },
+        "plugins.metrics-by-endpoint.response_time./concert/reservation": {
+          "min": 2,
+          "max": 1068,
+          "count": 2000,
+          "mean": 960.4,
+          "p50": 1022.7,
+          "median": 1022.7,
+          "p75": 1043.3,
+          "p90": 1043.3,
+          "p95": 1064.4,
+          "p99": 1064.4,
+          "p999": 1064.4
+        },
+        "vusers.session_length": {
+          "min": 4.2,
+          "max": 1117.5,
+          "count": 2000,
+          "mean": 972,
+          "p50": 1043.3,
+          "median": 1043.3,
+          "p75": 1043.3,
+          "p90": 1064.4,
+          "p95": 1064.4,
+          "p99": 1085.9,
+          "p999": 1107.9
+        },
+        "http.response_time.4xx": {
+          "min": 2,
+          "max": 1068,
+          "count": 1999,
+          "mean": 960.9,
+          "p50": 1022.7,
+          "median": 1022.7,
+          "p75": 1043.3,
+          "p90": 1043.3,
+          "p95": 1064.4,
+          "p99": 1064.4,
+          "p999": 1064.4
+        }
+      }
+    }
+  ]
+}

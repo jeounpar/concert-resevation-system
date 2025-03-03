@@ -45,7 +45,6 @@ export class OutboxRepository {
         const entites = await repo.find({
           where: { status: 'INIT' },
         });
-        console.log(entites);
 
         return entites ? entites.map(OutboxDomain.fromEntity) : [];
       },

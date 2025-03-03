@@ -33,8 +33,9 @@ export class TokenService {
         .userId({ userId });
       if (existToken) return existToken.info();
 
-      const newToken = await this.tokenRepository.save({
-        domain: TokenDomain.createWaitStatus({ userId, nowDate }),
+      const newToken = TokenDomain.createWaitStatus({ userId, nowDate });
+      await this.tokenRepository.insert({
+        domain: newToken,
         mgr,
       });
 

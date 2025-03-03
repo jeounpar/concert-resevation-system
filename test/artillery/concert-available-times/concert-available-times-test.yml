@@ -1,0 +1,18 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 1
+      arrivalRate: 10000
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  payload:
+    path: "../userId.csv"
+    fields:
+      - userId
+    order: sequential
+
+scenarios:
+  - flow:
+      - get:
+          url: "/concert/1/available-times"
